@@ -1,14 +1,14 @@
 import { SSTConfig } from 'sst';
-import { API } from './stacks/MyStack';
+import { APIStack } from './stacks/api';
 
 export default {
   config(_input) {
     return {
       name: 'unbind',
-      region: 'us-east-1',
+      region: 'us-west-2',
     };
   },
   stacks(app) {
-    app.stack(API);
+    app.stack(APIStack, { id: 'api' });
   },
 } satisfies SSTConfig;
