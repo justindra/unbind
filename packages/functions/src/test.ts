@@ -7,12 +7,13 @@ import { OpenAI } from 'langchain/llms/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Bucket } from 'sst/node/bucket';
+import { Config } from 'sst/node/config';
 import streamToBlob from 'stream-to-blob';
 
-const OPENAI_API_KEY = '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';
-const PINECONE_API_KEY = 'a1bd599c-6560-4adf-9a05-5c514ec6c373';
-const PINECONE_ENV = 'asia-northeast1-gcp';
-const PINECONE_INDEX = 'unbind-dev';
+const OPENAI_API_KEY = Config.OPENAI_API_KEY;
+const PINECONE_API_KEY = Config.PINECONE_API_KEY;
+const PINECONE_ENV = Config.PINECONE_ENV;
+const PINECONE_INDEX = Config.PINECONE_INDEX;
 
 const client = new S3Client({});
 
