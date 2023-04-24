@@ -19,7 +19,7 @@
     "constructs": "10.1.156",
     "husky": "^8.0.3",
     "prettier": "^2.8.7",
-    "sst": "^2.5.7",
+    "sst": "2.7.0",
     "typescript": "^5.0.4"
   },
   "workspaces": [
