@@ -23,13 +23,14 @@ export const DocumentItemPage: React.FC = () => {
                 <FileList
                   files={[
                     {
-                      name: 'Test Document Part 1',
+                      name: 'Part 1.pdf',
                       size: '5 pages',
-                      action: { label: 'Download', href: '#' },
+                      // action: { label: 'Download', href: '#' },
                     },
                     {
-                      name: 'Test Document Part 2',
-                      action: { label: 'Download', href: '#' },
+                      name: 'Part 2.pdf',
+                      size: '389 pages',
+                      // action: { label: 'Download', href: '#' },
                     },
                   ]}
                 />

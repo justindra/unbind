@@ -13,6 +13,7 @@ export default {
       colors: {
         ...colors,
         primary: colors.sky,
+        gray: colors.slate,
       },
     },
   },
