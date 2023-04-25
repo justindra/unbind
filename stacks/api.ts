@@ -1,6 +1,15 @@
-import { StackContext, Api, Function, Bucket, Config } from 'sst/constructs';
+import {
+  StackContext,
+  Api,
+  Function,
+  Bucket,
+  Config,
+  Table,
+} from 'sst/constructs';
+import { Auth } from 'sst/constructs/future';
+import { generateDefaultTableOptions } from 'jfsi/constructs';
 
-export function APIStack({ stack }: StackContext) {
+export function APIStack({ app, stack }: StackContext) {
   // const api = new Api(stack, 'api', {
   //   routes: {
   //     'GET /': 'packages/functions/src/lambda.handler',
@@ -14,6 +23,30 @@ export function APIStack({ stack }: StackContext) {
     'PINECONE_ENV',
     'PINECONE_INDEX'
   );
+  const google = Config.Secret.create(stack, 'GOOGLE_CLIENT_ID');
+  const facebook = Config.Secret.create(
+    stack,
+    'FACEBOOK_APP_ID',
+    'FACEBOOK_APP_SECRET'
+  );
+
+  const table = new Table(stack, 'table', generateDefaultTableOptions(app, 1));
+
+  const auth = new Auth(stack, 'auth', {
+    authenticator: {
+      handler: 'packages/functions/src/auth.handler',
+      bind: [
+        google.GOOGLE_CLIENT_ID,
+        // facebook.FACEBOOK_APP_ID,
+        // facebook.FACEBOOK_APP_SECRET,
+        table,
+      ],
+    },
+    // customDomain: {
+    //   domainName: DomainUtils.getWebDomain(app, 'auth'),
+    //   hostedZone: HOSTED_ZONE,
+    // },
+  });
 
   const documentBucket = new Bucket(stack, 'documents');
 
@@ -29,6 +62,11 @@ export function APIStack({ stack }: StackContext) {
   });
 
   stack.addOutputs({
+    AuthEndpoint: auth.url,
     // ApiEndpoint: api.url,
   });
+
+  return {
+    auth,
+  };
 }

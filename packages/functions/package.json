@@ -16,6 +16,7 @@
     "@pinecone-database/pinecone": "^0.0.14",
     "langchain": "^0.0.61",
     "pdf-parse": "^1.1.1",
-    "stream-to-blob": "^2.0.1"
+    "stream-to-blob": "^2.0.1",
+    "ulid": "^2.3.0"
   }
 }
