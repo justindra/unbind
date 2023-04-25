@@ -7,7 +7,7 @@ import './index.css';
 import { AppRoot, loader as appRootLoader } from './pages/app-root';
 import {
   AuthCallbackPage,
-  SignInPage as AuthSignInPage,
+  AuthSignInPage,
   AuthSignOutPage,
   createCallbackLoader,
   createSignOutLoader,
