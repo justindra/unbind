@@ -1,11 +1,11 @@
-import { initTRPC } from '@trpc/server';
+import { TRPCError, initTRPC } from '@trpc/server';
 import { awsLambdaRequestHandler } from '@trpc/server/adapters/aws-lambda';
 import { provideActor } from '@unbind/core/actors';
 import { Organizations } from '@unbind/core/organizations';
 import { Users } from '@unbind/core/users';
 import { ApiHandler } from 'sst/node/api';
 import { useSession } from 'sst/node/future/auth';
-import { z } from 'zod';
+import { ZodError, z } from 'zod';
 
 export function query<
   S extends z.ZodSchema<any, any, any>,
@@ -30,6 +30,7 @@ export const t = initTRPC.create();
 export const router = t.router({
   user_by_id: query(Users.getUserById),
   set_open_ai_key: mutation(Organizations.setOpenAIKey),
+  get_open_ai_key: query(Organizations.getOpenAIKey),
 });
 
 export type Router = typeof router;
@@ -38,8 +39,12 @@ const trpc = awsLambdaRequestHandler({
   router,
   createContext: async () => {
     const session = useSession();
-    console.log(session);
     provideActor(session);
+  },
+  onError({ error }) {
+    if (error.cause instanceof ZodError) {
+      error.message = JSON.parse(error.message)[0].message;
+    }
   },
 });
 

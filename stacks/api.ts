@@ -10,22 +10,7 @@ import { Auth } from 'sst/constructs/future';
 import { generateDefaultTableOptions } from 'jfsi/constructs';
 
 export function APIStack({ app, stack }: StackContext) {
-  const api = new Api(stack, 'api', {
-    routes: {
-      'GET /{proxy+}': {
-        function: {
-          handler: 'packages/functions/src/trpc.handler',
-          bind: [],
-        },
-      },
-      'POST /{proxy+}': {
-        function: {
-          handler: 'packages/functions/src/trpc.handler',
-          bind: [],
-        },
-      },
-    },
-  });
+  const table = new Table(stack, 'table', generateDefaultTableOptions(app, 1));
 
   const openAI = Config.Secret.create(stack, 'OPENAI_API_KEY');
   const pinecone = Config.Secret.create(
@@ -40,8 +25,6 @@ export function APIStack({ app, stack }: StackContext) {
     'FACEBOOK_APP_ID',
     'FACEBOOK_APP_SECRET'
   );
-
-  const table = new Table(stack, 'table', generateDefaultTableOptions(app, 1));
 
   const auth = new Auth(stack, 'auth', {
     authenticator: {
@@ -70,6 +53,28 @@ export function APIStack({ app, stack }: StackContext) {
       pinecone.PINECONE_ENV,
       pinecone.PINECONE_INDEX,
     ],
+  });
+
+  const api = new Api(stack, 'api', {
+    defaults: {
+      function: {
+        bind: [table, auth],
+      },
+    },
+    routes: {
+      'GET /{proxy+}': {
+        function: {
+          handler: 'packages/functions/src/trpc.handler',
+          bind: [],
+        },
+      },
+      'POST /{proxy+}': {
+        function: {
+          handler: 'packages/functions/src/trpc.handler',
+          bind: [],
+        },
+      },
+    },
   });
 
   stack.addOutputs({

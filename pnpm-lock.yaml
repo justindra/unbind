@@ -32,6 +32,9 @@ importers:
 
   apps/app:
     dependencies:
+      '@headlessui/react':
+        specifier: ^1.7.14
+        version: 1.7.14(react-dom@18.2.0)(react@18.2.0)
       '@heroicons/react':
         specifier: ^2.0.17
         version: 2.0.17(react@18.2.0)
@@ -68,6 +71,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-hook-form:
+        specifier: ^7.43.9
+        version: 7.43.9(react@18.2.0)
       react-router-dom:
         specifier: ^6.10.0
         version: 6.10.0(react-dom@18.2.0)(react@18.2.0)
@@ -120,6 +126,9 @@ importers:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.319.0
         version: 3.319.0
+      '@trpc/server':
+        specifier: ^10.21.1
+        version: 10.21.1
       electrodb:
         specifier: ^2.5.1
         version: 2.5.1(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/smithy-client@3.316.0)(@aws-sdk/types@3.310.0)
@@ -6106,6 +6115,15 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
+    dev: false
+
+  /react-hook-form@7.43.9(react@18.2.0):
+    resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is@17.0.2:
