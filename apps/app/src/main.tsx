@@ -19,6 +19,7 @@ import {
   REDIRECT_URL,
 } from './constants';
 import { DocumentItemPage } from './pages/documents/item';
+import { HomePage } from './pages';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,10 @@ const router = createBrowserRouter([
     element: <AppRoot />,
     loader: appRootLoader,
     errorElement: <div>Error...</div>,
-    children: [{ path: '/documents/:id', element: <DocumentItemPage /> }],
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: '/documents/:id', element: <DocumentItemPage /> },
+    ],
   },
   {
     path: '/auth/sign-in',
