@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import { DateTime } from 'luxon';
 
+/**
+ * A wrapper around a function to allow us to validate the inputs using Zod.
+ * @param schema The schema of the input
+ * @param func The function to run once input is validated
+ * @returns
+ */
 export function zod<
   Schema extends z.ZodSchema<any, any, any>,
   Return extends any
@@ -13,6 +19,9 @@ export function zod<
   return result;
 }
 
+/**
+ * A zod schema for a string that is a valid ISO8601 date
+ */
 export const iso8601 = () =>
   z
     .string()
