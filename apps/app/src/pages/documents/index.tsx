@@ -20,5 +20,10 @@ export const DocumentsHomePage: React.FC = () => {
     );
   }
 
-  return <div className='h-screen'>Documents Home Page</div>;
+  return (
+    <div className='h-screen'>
+      Documents Home Page
+      <DocumentUploadButton />
+    </div>
+  );
 };

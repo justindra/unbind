@@ -1,5 +1,5 @@
 import { generateDefaultTableOptions } from 'jfsi/constructs';
-import { Bucket, StackContext, Table } from 'sst/constructs';
+import { Bucket, Config, StackContext, Table } from 'sst/constructs';
 
 export function DataStack({ app, stack }: StackContext) {
   // The DDB table that stores all the data
@@ -15,6 +15,29 @@ export function DataStack({ app, stack }: StackContext) {
         allowedHeaders: ['*'],
       },
     ],
+  });
+
+  const pinecone = Config.Secret.create(
+    stack,
+    'PINECONE_API_KEY',
+    'PINECONE_ENV',
+    'PINECONE_INDEX'
+  );
+
+  filesBucket.addNotifications(stack, {
+    fileUploaded: {
+      function: {
+        handler: 'packages/functions/src/file-uploaded.handler',
+        bind: [
+          table,
+          filesBucket,
+          pinecone.PINECONE_API_KEY,
+          pinecone.PINECONE_ENV,
+          pinecone.PINECONE_INDEX,
+        ],
+      },
+      events: ['object_created'],
+    },
   });
 
   return { table, filesBucket };

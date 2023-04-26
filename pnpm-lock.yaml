@@ -132,15 +132,27 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.319.0
         version: 3.319.0
+      '@pinecone-database/pinecone':
+        specifier: ^0.0.14
+        version: 0.0.14
       '@trpc/server':
         specifier: ^10.21.1
         version: 10.21.1
       electrodb:
         specifier: ^2.5.1
         version: 2.5.1(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/smithy-client@3.316.0)(@aws-sdk/types@3.310.0)
+      langchain:
+        specifier: ^0.0.64
+        version: 0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
       luxon:
         specifier: ^3.3.0
         version: 3.3.0
+      pdf-parse:
+        specifier: ^1.1.1
+        version: 1.1.1
+      stream-to-blob:
+        specifier: ^2.0.1
+        version: 2.0.1
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -170,8 +182,8 @@ importers:
         specifier: ^10.21.1
         version: 10.21.1
       langchain:
-        specifier: ^0.0.61
-        version: 0.0.61(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
+        specifier: ^0.0.64
+        version: 0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
       pdf-parse:
         specifier: ^1.1.1
         version: 1.1.1
@@ -5126,8 +5138,8 @@ packages:
     resolution: {integrity: sha512-TH+b56pVXQq0tsyooYLeNfV11j6ih7D50dyN8tkM0e7ndiUH28Nziojiog3qRFlmEj9XePYdZUrNJ2079Qjdow==}
     engines: {node: '>=14.0.0'}
 
-  /langchain@0.0.61(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1):
-    resolution: {integrity: sha512-6cdMKO6R2Fthh6LwEENbir/skQjPexltKKSyRAdLGZ5BgUaE/qCwPf8fMasQw0ZtB0lhf7MAKW5YTEj7HJcxFQ==}
+  /langchain@0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1):
+    resolution: {integrity: sha512-EPR5igtuSemtPAesQ8oa8SF/xjTA+bYJW00JNJ/8PYkPNiU+uc+cifOEH3H/DFam+oDY9XhR7WV+GhBEskVNNA==}
     engines: {node: '>=18'}
     peerDependencies:
       '@aws-sdk/client-lambda': ^3.310.0
@@ -5138,9 +5150,9 @@ packages:
       '@pinecone-database/pinecone': '*'
       '@supabase/supabase-js': ^2.10.0
       '@zilliz/milvus2-sdk-node': ^2.2.0
-      axios: ^0.26.0
+      axios: '*'
       cheerio: ^1.0.0-rc.12
-      chromadb: ^1.3.0
+      chromadb: ^1.4.0
       cohere-ai: ^5.0.2
       d3-dsv: ^2.0.0
       epub2: ^3.0.1

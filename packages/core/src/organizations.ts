@@ -57,15 +57,19 @@ export const setOpenAIKey = zod(
 /**
  * Get the OpenAI Key for the active organization
  */
-export const getOpenAIKey = zod(z.void(), async () => {
-  const actor = assertActor('user');
+export const getOpenAIKey = zod(
+  z.string().optional(),
+  async (organizationId) => {
+    const organizationIdToUse =
+      organizationId ?? assertActor('user').properties.organizationId;
 
-  const res = await OrgBase.OrganizationEntity.get({
-    organizationId: actor.properties.organizationId,
-  }).go();
+    const res = await OrgBase.OrganizationEntity.get({
+      organizationId: organizationIdToUse,
+    }).go();
 
-  return !!res.data?.openAIApiKey;
-});
+    return res.data?.openAIApiKey;
+  }
+);
 
 export const Organizations = {
   ...OrgBase,

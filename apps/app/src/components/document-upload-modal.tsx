@@ -13,14 +13,14 @@ type Inputs = {
 };
 
 const uploadToPreSignedUrl = async (file: File, url: string) => {
-  const formData = new FormData();
-  formData.append('Content-Type', file.type);
-  formData.append('file', file); // The file has be the last element
+  // const formData = new FormData();
+  // formData.append('Content-Type', file.type);
+  // formData.append('file', file); // The file has be the last element
 
   return fetch(url, {
     method: 'PUT',
-    headers: { 'Content-Type': 'multipart/form-data' },
-    body: formData,
+    headers: { 'Content-Type': file.type },
+    body: file,
   });
 };
 
@@ -53,7 +53,9 @@ export const DocumentUploadButton: React.FC = () => {
   const onSubmit = handleSubmit(async ({ files }) => {
     setLoading(true);
     setFilesUploading(files);
-    getUploadUrls.mutate(files.map((file) => file.name));
+    getUploadUrls.mutate(
+      files.map((file) => ({ filename: file.name, type: file.type }))
+    );
   });
 
   return (

@@ -10,6 +10,15 @@ import { Configuration } from './dynamo';
 
 const s3 = new S3Client({});
 
+const DOCUMENT_STATUS = ['created', 'processing', 'ready', 'failed'] as const;
+const FILE_STATUS = [
+  'created',
+  'uploaded',
+  'processing',
+  'ready',
+  'failed',
+] as const;
+
 const DocumentsEntity = new Entity(
   {
     model: {
@@ -27,7 +36,7 @@ const DocumentsEntity = new Entity(
       /** A summary of what this file contains */
       summary: { type: 'string' },
       status: {
-        type: ['created', 'processing', 'ready', 'failed'] as const,
+        type: DOCUMENT_STATUS,
         required: true,
       },
     },
@@ -75,17 +84,19 @@ const FilesEntity = new Entity(
       /** The S3 Key this file is saved under */
       s3Key: { type: 'string', required: true },
       /** The file type */
-      type: { type: ['application/pdf'] as const },
+      type: { type: 'string' },
       /** The file's size in bytes */
       size_bytes: { type: 'number' },
       /** The number of pages this file contains, it's mainly used for pdf type */
-      pages: { type: 'number' },
+      pageCount: { type: 'number' },
       /** A summary of what this file contains */
       summary: { type: 'string' },
       status: {
-        type: ['created', 'uploaded', 'processing', 'ready', 'failed'] as const,
+        type: FILE_STATUS,
         required: true,
       },
+      /** A message to explain the status, generally used for 'failed' */
+      statusMessage: { type: 'string' },
     },
     indexes: {
       filesByOrganizationId: {
@@ -136,6 +147,31 @@ export const createDocument = zod(z.void(), async () => {
 });
 
 /**
+ * Generate the Key for a file inside of S3
+ * @param organizationId The id of the organization this file belongs to
+ * @param documentId The id of the document this file belongs to
+ * @param fileId The id of the file
+ * @returns
+ */
+export function generateFileS3Key(
+  organizationId: string,
+  documentId: string,
+  fileId: string
+) {
+  return `${organizationId}/${documentId}/${fileId}`;
+}
+
+/**
+ * Get the metadata from the S3 key, basically a reverse of `generateFileS3Key`
+ * @param key The S3 key to get the metadata from
+ * @returns
+ */
+export function getMetadataFromS3Key(key: string) {
+  const [organizationId, documentId, fileId] = key.split('/');
+  return { organizationId, documentId, fileId };
+}
+
+/**
  * Get a pre-signed url that we can use to upload the file into S3
  * @param documentId The document's id to add the file to
  */
@@ -143,12 +179,17 @@ export const getUploadUrl = zod(
   z.object({
     documentId: z.string(),
     filename: z.string().optional(),
+    type: z.string().optional(),
   }),
-  async ({ documentId, filename }) => {
+  async ({ documentId, filename, type }) => {
     const actor = assertActor('user');
 
     const fileId = generateId('file');
-    const key = `${actor.properties.organizationId}/${documentId}/${fileId}`;
+    const key = generateFileS3Key(
+      actor.properties.organizationId,
+      documentId,
+      fileId
+    );
 
     const file = await FilesEntity.create({
       organizationId: actor.properties.organizationId,
@@ -158,11 +199,13 @@ export const getUploadUrl = zod(
       s3Bucket: Bucket.files.bucketName,
       s3Key: key,
       status: 'created',
+      type,
     }).go();
 
     const command = new PutObjectCommand({
       Bucket: Bucket.files.bucketName,
       Key: key,
+      ContentType: type,
       Metadata: {
         organizationId: file.data.organizationId,
         documentId: file.data.documentId,
@@ -181,13 +224,17 @@ export const getUploadUrl = zod(
  * @param fileNames The file names to upload
  */
 export const getUploadUrlsForNewDocument = zod(
-  z.array(z.string()),
-  async (fileNames) => {
+  z.array(z.object({ filename: z.string(), type: z.string() })),
+  async (files) => {
     const document = await createDocument();
 
     const fileUploadUrls = await Promise.all(
-      fileNames.map(async (filename) => {
-        return getUploadUrl({ documentId: document.documentId, filename });
+      files.map(async ({ filename, type }) => {
+        return getUploadUrl({
+          documentId: document.documentId,
+          filename,
+          type,
+        });
       })
     );
 
@@ -202,17 +249,163 @@ export const getUploadUrlsForNewDocument = zod(
  * Get a document and all of it's related files by the document's id.
  * @param documentId The document's id
  */
-export const getDocumentById = zod(z.string(), async (documentId) => {
-  const actor = assertActor('user');
+export const getDocumentById = zod(
+  z.object({ documentId: z.string(), organizationId: z.string().optional() }),
+  async ({ documentId, organizationId }) => {
+    const organizationIdToUse =
+      organizationId ?? assertActor('user').properties.organizationId;
 
-  const res = await DocumentService.collections
-    .documents({
-      organizationId: actor.properties.organizationId,
+    const res = await DocumentService.collections
+      .documents({
+        organizationId: organizationIdToUse,
+        documentId,
+      })
+      .go();
+
+    return res.data;
+  }
+);
+
+/**
+ * Get a file
+ */
+export const getFile = zod(
+  z.object({
+    organizationId: z.string(),
+    documentId: z.string(),
+    fileId: z.string(),
+  }),
+  async ({ organizationId, documentId, fileId }) => {
+    const res = await FilesEntity.get({
+      organizationId,
       documentId,
-    })
-    .go();
+      fileId,
+    }).go();
 
-  return res.data;
-});
+    return res.data;
+  }
+);
+
+/**
+ * Work out what the document status should be based on the provided list of
+ * file statuses.
+ * @param fileStatuses List of file statuses
+ * @returns
+ */
+function getDocumentStatusFromFileStatuses(
+  fileStatuses: (typeof FILE_STATUS)[number][]
+): (typeof DOCUMENT_STATUS)[number] {
+  if (fileStatuses.some((status) => status === 'failed')) {
+    return 'failed';
+  }
+  if (fileStatuses.every((status) => status === 'ready')) {
+    return 'ready';
+  }
+
+  if (
+    fileStatuses.some(
+      (status) => status === 'uploaded' || status === 'processing'
+    )
+  ) {
+    return 'processing';
+  }
+
+  return 'created';
+}
+
+/**
+ * Update the document's status based on the file's statuses.
+ */
+const updateDocumentStatusFromFile = zod(
+  z.object({
+    organizationId: z.string(),
+    documentId: z.string(),
+  }),
+  async ({ organizationId, documentId }) => {
+    // Get the document and every other file that belongs to that document
+    const data = await getDocumentById({ documentId, organizationId });
+    // Work out the document's status based on the file statuses
+    const documentStatus = getDocumentStatusFromFileStatuses(
+      data.files.map((file) => file.status)
+    );
+
+    // If the document's status has changed, update it
+    if (documentStatus !== data.documents[0].status) {
+      await DocumentsEntity.update({
+        organizationId,
+        documentId,
+      })
+        .set({ status: documentStatus })
+        .go();
+    }
+  }
+);
+
+/**
+ * Update a file's status and inherently update the document's status as well.
+ */
+export const updateFileStatus = zod(
+  z.object({
+    organizationId: z.string(),
+    documentId: z.string(),
+    fileId: z.string(),
+    status: z.enum(FILE_STATUS),
+    statusMessage: z.string().optional(),
+  }),
+  async ({
+    organizationId,
+    documentId,
+    fileId,
+    status,
+    statusMessage = '',
+  }) => {
+    // Update the file's status
+    const res = await FilesEntity.update({
+      organizationId,
+      documentId,
+      fileId,
+    })
+      .set({ status, statusMessage: statusMessage })
+      .go({ response: 'all_new' });
+
+    await updateDocumentStatusFromFile({ organizationId, documentId });
+
+    return res.data;
+  }
+);
+
+/**
+ * Update a file's metadata after it has been processed via AI and make sure we
+ * have the most up to date information about the file.
+ */
+export const updateFileAfterProcessing = zod(
+  z.object({
+    organizationId: z.string(),
+    documentId: z.string(),
+    fileId: z.string(),
+    size: z.number(),
+    summary: z.string(),
+    pageCount: z.number(),
+  }),
+  async ({ organizationId, documentId, fileId, size, summary, pageCount }) => {
+    const res = await FilesEntity.update({
+      organizationId,
+      documentId,
+      fileId,
+    })
+      .set({
+        size_bytes: size,
+        summary,
+        pageCount,
+        status: 'ready',
+        statusMessage: '',
+      })
+      .go({ response: 'all_new' });
+
+    await updateDocumentStatusFromFile({ organizationId, documentId });
+
+    return res.data;
+  }
+);
 
 export * as Documents from './documents';
