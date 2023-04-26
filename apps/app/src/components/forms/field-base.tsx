@@ -1,9 +1,11 @@
 export type FieldBaseProps = React.PropsWithChildren<{
-  label: string;
+  label?: string;
   name?: string;
   helperText?: string;
   error?: string;
   placeholder?: string;
+  className?: React.HTMLAttributes<HTMLDivElement>['className'];
+  disabled?: boolean;
 }>;
 
 export const FieldBase: React.FC<FieldBaseProps> = ({
@@ -12,22 +14,27 @@ export const FieldBase: React.FC<FieldBaseProps> = ({
   helperText,
   error,
   children,
+  className,
 }) => {
   return (
-    <div className='sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5'>
-      <label
-        htmlFor={name}
-        className='block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5'>
-        {label}
-      </label>
-      <div className='mt-2 sm:col-span-2 sm:mt-0'>
-        {children}
-        {error ? (
-          <p className='mt-2 text-sm text-red-500'>{error}</p>
-        ) : helperText ? (
-          <p className='mt-2 text-sm text-gray-500'>{helperText}</p>
-        ) : null}
-      </div>
+    <div className={className}>
+      {label && (
+        <label
+          htmlFor={name}
+          className='block text-sm font-medium leading-6 text-gray-900 dark:text-white'>
+          {label}
+        </label>
+      )}
+      <div className='mt-2'>{children}</div>
+      {error ? (
+        <p className='mt-3 text-sm leading-6 text-red-600 dark:text-red-400'>
+          {error}
+        </p>
+      ) : helperText ? (
+        <p className='mt-3 text-sm leading-6 text-gray-600 dark:text-gray-400'>
+          {helperText}
+        </p>
+      ) : null}
     </div>
   );
 };

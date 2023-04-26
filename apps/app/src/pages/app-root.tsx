@@ -1,4 +1,4 @@
-import { HomeIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, HomeIcon } from '@heroicons/react/24/outline';
 import { AuthUtils, AppSidebarLayout } from '@jfsi/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { httpBatchLink } from '@trpc/client';
@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Outlet, redirect, useLoaderData } from 'react-router-dom';
 import { COMPANY_NAME } from '../constants';
 import { trpc } from '../utils/trpc';
-import { Modal } from '../components/modal';
+import { SetOpenAIKeyModal } from '../components/set-open-ai-key-modal';
 
 const OpenAIApiKeyModal = () => {
   const { isLoading, data, refetch } = trpc.get_open_ai_key.useQuery(
@@ -19,7 +19,7 @@ const OpenAIApiKeyModal = () => {
   }, []);
   if (isLoading || !!data) return null;
 
-  return <Modal />;
+  return <SetOpenAIKeyModal />;
 };
 
 export const AppRoot: React.FC = () => {
@@ -51,7 +51,12 @@ export const AppRoot: React.FC = () => {
             logoUrl: '',
           }}
           navigation={[
-            { name: 'Home', href: '/', icon: HomeIcon, current: true },
+            {
+              name: 'Documents',
+              href: '/',
+              icon: DocumentDuplicateIcon,
+              current: true,
+            },
           ]}
           profileUrl='#'
           title={COMPANY_NAME}>

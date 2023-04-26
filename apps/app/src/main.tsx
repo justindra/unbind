@@ -20,6 +20,7 @@ import {
 } from './constants';
 import { DocumentItemPage } from './pages/documents/item';
 import { HomePage } from './pages';
+import { DocumentsHomePage } from './pages/documents';
 
 const router = createBrowserRouter([
   {
@@ -29,7 +30,13 @@ const router = createBrowserRouter([
     errorElement: <div>Error...</div>,
     children: [
       { index: true, element: <HomePage /> },
-      { path: '/documents/:id', element: <DocumentItemPage /> },
+      {
+        path: '/documents',
+        children: [
+          { index: true, element: <DocumentsHomePage /> },
+          { path: '/documents/:id', element: <DocumentItemPage /> },
+        ],
+      },
     ],
   },
   {

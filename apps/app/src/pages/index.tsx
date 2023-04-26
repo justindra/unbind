@@ -11,6 +11,9 @@ export const HomePage: React.FC = () => {
 
   console.log(file);
   return (
-    <FieldFileUpload controlProps={{ control, name: 'file' }} label='Upload' />
+    <FieldFileUpload
+      controlProps={{ control, name: 'file' }}
+      label='Choose a document'
+    />
   );
 };

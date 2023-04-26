@@ -35,6 +35,10 @@ export const router = t.router({
   create_document: mutation(Documents.createDocument),
   get_upload_url: mutation(Documents.getUploadUrl),
   get_document_by_id: query(Documents.getDocumentById),
+  list_documents: query(Documents.listDocuments),
+  get_upload_urls_for_new_document: mutation(
+    Documents.getUploadUrlsForNewDocument
+  ),
 });
 
 export type Router = typeof router;
