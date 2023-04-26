@@ -1,6 +1,7 @@
-import { TRPCError, initTRPC } from '@trpc/server';
+import { initTRPC } from '@trpc/server';
 import { awsLambdaRequestHandler } from '@trpc/server/adapters/aws-lambda';
 import { provideActor } from '@unbind/core/actors';
+import { Documents } from '@unbind/core/documents';
 import { Organizations } from '@unbind/core/organizations';
 import { Users } from '@unbind/core/users';
 import { ApiHandler } from 'sst/node/api';
@@ -31,6 +32,9 @@ export const router = t.router({
   user_by_id: query(Users.getUserById),
   set_open_ai_key: mutation(Organizations.setOpenAIKey),
   get_open_ai_key: query(Organizations.getOpenAIKey),
+  create_document: mutation(Documents.createDocument),
+  get_upload_url: mutation(Documents.getUploadUrl),
+  get_document_by_id: query(Documents.getDocumentById),
 });
 
 export type Router = typeof router;

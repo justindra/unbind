@@ -126,6 +126,12 @@ importers:
       '@aws-sdk/client-dynamodb':
         specifier: ^3.319.0
         version: 3.319.0
+      '@aws-sdk/client-s3':
+        specifier: ^3.317.0
+        version: 3.317.0(@aws-sdk/signature-v4-crt@3.310.0)
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.319.0
+        version: 3.319.0
       '@trpc/server':
         specifier: ^10.21.1
         version: 10.21.1
@@ -1518,6 +1524,21 @@ packages:
       '@aws-sdk/types': 3.310.0
       tslib: 2.5.0
 
+  /@aws-sdk/s3-request-presigner@3.319.0:
+    resolution: {integrity: sha512-mq/4nqr/3sHGx9iJqPXXkfBPAlXGB000u4dX4QCMPFmMupfH5sT8M+hYgcB6N/2HuZ+JNJQntwu9q97gjhwpDQ==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@aws-sdk/middleware-endpoint': 3.310.0
+      '@aws-sdk/protocol-http': 3.310.0
+      '@aws-sdk/signature-v4-multi-region': 3.310.0(@aws-sdk/signature-v4-crt@3.310.0)
+      '@aws-sdk/smithy-client': 3.316.0
+      '@aws-sdk/types': 3.310.0
+      '@aws-sdk/util-format-url': 3.310.0
+      tslib: 2.5.0
+    transitivePeerDependencies:
+      - '@aws-sdk/signature-v4-crt'
+    dev: false
+
   /@aws-sdk/service-error-classification@3.310.0:
     resolution: {integrity: sha512-PuyC7k3qfIKeH2LCnDwbttMOKq3qAx4buvg0yfnJtQOz6t1AR8gsnAq0CjKXXyfkXwNKWTqCpE6lVNUIkXgsMw==}
     engines: {node: '>=14.0.0'}
@@ -1692,6 +1713,15 @@ packages:
     resolution: {integrity: sha512-3I64UMoYA2e2++oOUJXRcFtYLpLylnZFRltWfPo1B3dLlf+MIWat9djT+mMus+hW1ntLsvAIVu1hLVePJC0gvw==}
     engines: {node: '>=14.0.0'}
     dependencies:
+      '@aws-sdk/types': 3.310.0
+      tslib: 2.5.0
+    dev: false
+
+  /@aws-sdk/util-format-url@3.310.0:
+    resolution: {integrity: sha512-NBOvmvvVR3ydquHmznfgtakiSgDhq8Ww6fq8TUaEjM+Es6+iqY4AwZo0rZ9xTX3GpCcoZy391HUi6kiXRAFzuA==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@aws-sdk/querystring-builder': 3.310.0
       '@aws-sdk/types': 3.310.0
       tslib: 2.5.0
     dev: false

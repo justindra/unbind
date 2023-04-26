@@ -1,8 +1,11 @@
 import { StackContext, StaticSite, use } from 'sst/constructs';
 import { APIStack } from './api';
+import { AuthStack } from './auth';
 
 export function WebStack({ app, stack }: StackContext) {
-  const { auth, api } = use(APIStack);
+  const { api } = use(APIStack);
+  const { auth } = use(AuthStack);
+
   const appSite = new StaticSite(stack, 'app', {
     path: 'apps/app',
     buildOutput: 'dist',
