@@ -1,6 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import {
+  RouterProvider,
+  createBrowserRouter,
+  redirect,
+} from 'react-router-dom';
 
 import './index.css';
 
@@ -18,8 +22,10 @@ import {
   COMPANY_NAME,
   REDIRECT_URL,
 } from './constants';
-import { DocumentItemPage } from './pages/documents/item';
-import { HomePage } from './pages';
+import {
+  DocumentItemPage,
+  documentItemPageLoader,
+} from './pages/documents/item';
 import { DocumentsHomePage } from './pages/documents';
 
 const router = createBrowserRouter([
@@ -29,12 +35,16 @@ const router = createBrowserRouter([
     loader: appRootLoader,
     errorElement: <div>Error...</div>,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, loader: () => redirect('/documents') },
       {
         path: '/documents',
         children: [
           { index: true, element: <DocumentsHomePage /> },
-          { path: '/documents/:id', element: <DocumentItemPage /> },
+          {
+            path: '/documents/:documentId',
+            element: <DocumentItemPage />,
+            loader: documentItemPageLoader,
+          },
         ],
       },
     ],

@@ -19,7 +19,6 @@ type FileDetails = {
 /**
  * Load the vector embeddings from a file and store them in Pinecone so that
  * it can be used to search for similar documents.
- * @returns
  */
 export async function loadEmbeddingsFromS3Object(
   s3Object: GetObjectCommandOutput,
@@ -38,6 +37,7 @@ export async function loadEmbeddingsFromS3Object(
     metadata: {
       ...text.metadata,
       fileId,
+      documentId,
     },
   }));
 
@@ -51,7 +51,7 @@ export async function loadEmbeddingsFromS3Object(
 
   await PineconeStore.fromDocuments(texts, embeddings, {
     pineconeIndex,
-    namespace: documentId,
+    namespace: organizationId,
   });
 
   return { pageCount };

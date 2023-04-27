@@ -1,6 +1,6 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { Entity, Service } from 'electrodb';
+import { Entity, EntityItem, Service } from 'electrodb';
 import { AUDIT_FIELDS, DDB_KEYS, generateId } from 'jfsi/node/entities';
 import { Bucket } from 'sst/node/bucket';
 import { z } from 'zod';
@@ -18,6 +18,9 @@ const FILE_STATUS = [
   'ready',
   'failed',
 ] as const;
+
+export type DocumentStatus = (typeof DOCUMENT_STATUS)[number];
+export type FileStatus = (typeof FILE_STATUS)[number];
 
 const DocumentsEntity = new Entity(
   {
@@ -61,6 +64,8 @@ const DocumentsEntity = new Entity(
   },
   Configuration
 );
+
+export type DocumentInfo = EntityItem<typeof DocumentsEntity>;
 
 const FilesEntity = new Entity(
   {
@@ -133,7 +138,7 @@ export const listDocuments = zod(z.void(), async () => {
 });
 
 /** Create a new document */
-export const createDocument = zod(z.void(), async () => {
+export const createDocument = zod(z.string().optional(), async (name) => {
   const actor = assertActor('user');
 
   const res = await DocumentsEntity.create({
@@ -141,6 +146,7 @@ export const createDocument = zod(z.void(), async () => {
     documentId: generateId('docu'),
     status: 'created',
     createdBy: actor.properties.userId,
+    name,
   }).go();
 
   return res.data;
@@ -200,6 +206,7 @@ export const getUploadUrl = zod(
       s3Key: key,
       status: 'created',
       type,
+      createdBy: actor.properties.userId,
     }).go();
 
     const command = new PutObjectCommand({
@@ -226,8 +233,10 @@ export const getUploadUrl = zod(
 export const getUploadUrlsForNewDocument = zod(
   z.array(z.object({ filename: z.string(), type: z.string() })),
   async (files) => {
-    const document = await createDocument();
+    // Create a new document which defaults to the name of the first file
+    const document = await createDocument(files[0].filename);
 
+    // Get the upload urls for each file
     const fileUploadUrls = await Promise.all(
       files.map(async ({ filename, type }) => {
         return getUploadUrl({
@@ -293,8 +302,8 @@ export const getFile = zod(
  * @returns
  */
 function getDocumentStatusFromFileStatuses(
-  fileStatuses: (typeof FILE_STATUS)[number][]
-): (typeof DOCUMENT_STATUS)[number] {
+  fileStatuses: FileStatus[]
+): DocumentStatus {
   if (fileStatuses.some((status) => status === 'failed')) {
     return 'failed';
   }

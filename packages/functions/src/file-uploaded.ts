@@ -24,8 +24,6 @@ async function getObject(key: string, bucketName: string) {
  * Handle when a file or multiple file(s) are uploaded to S3.
  */
 export const handler: S3Handler = async (event) => {
-  console.log(event);
-
   await Promise.all(
     event.Records.map(async (record) => {
       // Get the key and bucket name from the event

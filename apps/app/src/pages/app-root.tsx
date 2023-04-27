@@ -22,24 +22,23 @@ const OpenAIApiKeyModal = () => {
   return <SetOpenAIKeyModal />;
 };
 
+export const queryClient = new QueryClient();
+export const trpcClient = trpc.createClient({
+  links: [
+    httpBatchLink({
+      url: import.meta.env.VITE_API_ENDPOINT,
+      // You can pass any HTTP headers you wish here
+      async headers() {
+        return {
+          authorization: `Bearer ${AuthUtils.getToken()}` || '',
+        };
+      },
+    }),
+  ],
+});
+
 export const AppRoot: React.FC = () => {
   const { currentUser } = useLoaderData() as Awaited<ReturnType<typeof loader>>;
-  const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        httpBatchLink({
-          url: import.meta.env.VITE_API_ENDPOINT,
-          // You can pass any HTTP headers you wish here
-          async headers() {
-            return {
-              authorization: `Bearer ${AuthUtils.getToken()}` || '',
-            };
-          },
-        }),
-      ],
-    })
-  );
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
@@ -53,7 +52,7 @@ export const AppRoot: React.FC = () => {
           navigation={[
             {
               name: 'Documents',
-              href: '/',
+              href: '/documents',
               icon: DocumentDuplicateIcon,
               current: true,
             },
