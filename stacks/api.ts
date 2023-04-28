@@ -1,4 +1,11 @@
-import { StackContext, Api, Config, use } from 'sst/constructs';
+import {
+  StackContext,
+  Api,
+  Config,
+  use,
+  WebSocketApi,
+  AppSyncApi,
+} from 'sst/constructs';
 import { DataStack } from './data';
 import { AuthStack } from './auth';
 
@@ -7,13 +14,6 @@ export function APIStack({ app, stack }: StackContext) {
   const { auth } = use(AuthStack);
 
   // const openAI = Config.Secret.create(stack, 'OPENAI_API_KEY');
-  // const pinecone = Config.Secret.create(
-  //   stack,
-  //   'PINECONE_API_KEY',
-  //   'PINECONE_ENV',
-  //   'PINECONE_INDEX'
-  // );
-
   // new Function(stack, 'TestFunction', {
   //   handler: 'packages/functions/src/test.handler',
   //   bind: [
@@ -44,6 +44,27 @@ export function APIStack({ app, stack }: StackContext) {
         },
       },
     },
+  });
+
+  const ws = new WebSocketApi(stack, 'ws-api', {
+    // customDomain: {
+    //   path: 'chat',
+    //   cdk: { domainName: api.cdk.domainName },
+    // },
+    routes: {
+      $connect: 'packages/functions/src/websocket/connect.handler',
+      $disconnect: 'packages/functions/src/websocket/disconnect.handler',
+      ['send-message']: {
+        function: {
+          handler: 'packages/functions/src/websocket/send-message.handler',
+        },
+      },
+    },
+  });
+
+  stack.addOutputs({
+    apiUrl: api.customDomainUrl || api.url,
+    websocketUrl: ws.customDomainUrl || ws.url,
   });
 
   return {
