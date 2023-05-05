@@ -8,44 +8,44 @@ import { WebsocketApiHandler, useConnectionId } from './handler';
 
 export const handler = WebsocketApiHandler(async () => {
   const connectionId = useConnectionId();
-  console.log(connectionId);
-  // const documentId = useQueryParam('documentId');
-  // let chatId = useQueryParam('chatId');
-  // const user = assertActor('user');
 
-  // if (!documentId) {
-  //   console.error('Unable to connect without documentId');
-  //   return { statusCode: 400 };
-  // }
+  const documentId = useQueryParam('documentId');
+  let chatId = useQueryParam('chatId');
+  const user = assertActor('user');
 
-  // const document = await Documents.getDocumentById({
-  //   documentId,
-  //   organizationId: user.properties.organizationId,
-  // });
+  if (!documentId) {
+    console.error('Unable to connect without documentId');
+    return { statusCode: 400 };
+  }
 
-  // if (!document) {
-  //   console.error(`Unable to find document with id ${documentId}`);
-  //   return { statusCode: 404 };
-  // }
+  const document = await Documents.getDocumentById({
+    documentId,
+    organizationId: user.properties.organizationId,
+  });
 
-  // // If no chatId is provided then create a new chat
-  // if (!chatId) {
-  //   const res = await createChat({
-  //     organizationId: user.properties.userId,
-  //     documentId,
-  //     actorId: user.properties.userId,
-  //   });
+  if (!document) {
+    console.error(`Unable to find document with id ${documentId}`);
+    return { statusCode: 404 };
+  }
 
-  //   chatId = res.chatId;
-  // }
+  // If no chatId is provided then create a new chat
+  if (!chatId) {
+    const res = await createChat({
+      organizationId: user.properties.userId,
+      documentId,
+      actorId: user.properties.userId,
+    });
 
-  // await WebSocketConnections.connect({
-  //   connectionId,
-  //   documentId,
-  //   chatId,
-  //   userId: user.properties.userId,
-  //   organizationId: user.properties.organizationId,
-  // });
+    chatId = res.chatId;
+  }
+
+  await WebSocketConnections.connect({
+    connectionId,
+    documentId,
+    chatId,
+    userId: user.properties.userId,
+    organizationId: user.properties.organizationId,
+  });
 
   return { statusCode: 200 };
 });

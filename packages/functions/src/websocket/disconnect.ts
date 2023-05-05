@@ -5,11 +5,11 @@ import { WebsocketApiHandler, useConnectionId } from './handler';
 export const handler = WebsocketApiHandler(async () => {
   const connectionId = useConnectionId();
 
-  // const connection = await WebSocketConnections.getConnectionById(connectionId);
+  const connection = await WebSocketConnections.getConnectionById(connectionId);
 
-  // await WebSocketConnections.disconnect({
-  //   connectionId: connection.connectionId,
-  // });
+  await WebSocketConnections.disconnect({
+    connectionId: connection.connectionId,
+  });
 
   return { statusCode: 200 };
 });
