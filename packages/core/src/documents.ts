@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { assertActor } from './actors';
 import { zod } from './zod';
 import { Configuration } from './dynamo';
+import { ChatsEntity } from './chats';
 
 const s3 = new S3Client({});
 
@@ -123,6 +124,7 @@ const FilesEntity = new Entity(
 const DocumentService = new Service({
   documents: DocumentsEntity,
   files: FilesEntity,
+  chats: ChatsEntity,
 });
 
 export const listDocuments = zod(z.void(), async () => {
@@ -255,7 +257,7 @@ export const getUploadUrlsForNewDocument = zod(
 );
 
 /**
- * Get a document and all of it's related files by the document's id.
+ * Get a document and all of it's related files and chats by the document's id.
  * @param documentId The document's id
  */
 export const getDocumentById = zod(

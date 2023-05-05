@@ -47,6 +47,11 @@ export function APIStack({ app, stack }: StackContext) {
   });
 
   const ws = new WebSocketApi(stack, 'ws-api', {
+    defaults: {
+      function: {
+        bind: [table, auth],
+      },
+    },
     // customDomain: {
     //   path: 'chat',
     //   cdk: { domainName: api.cdk.domainName },
@@ -54,10 +59,15 @@ export function APIStack({ app, stack }: StackContext) {
     routes: {
       $connect: 'packages/functions/src/websocket/connect.handler',
       $disconnect: 'packages/functions/src/websocket/disconnect.handler',
-      ['send-message']: {
-        function: {
-          handler: 'packages/functions/src/websocket/send-message.handler',
-        },
+      $default: 'packages/functions/src/websocket/default.handler',
+    },
+  });
+
+  ws.addRoutes(stack, {
+    ['send-message']: {
+      function: {
+        handler: 'packages/functions/src/websocket/send-message.handler',
+        bind: [ws],
       },
     },
   });
