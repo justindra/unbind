@@ -5,6 +5,7 @@ import {
   use,
   WebSocketApi,
   AppSyncApi,
+  EventBus,
 } from 'sst/constructs';
 import { DataStack } from './data';
 import { AuthStack } from './auth';
@@ -24,10 +25,13 @@ export function APIStack({ app, stack }: StackContext) {
   //   ],
   // });
 
+  const eventBus = new EventBus(stack, 'event-bus', {});
+
+  // TRPC API
   const api = new Api(stack, 'api', {
     defaults: {
       function: {
-        bind: [table, auth, filesBucket],
+        bind: [table, auth, filesBucket, eventBus],
       },
     },
     routes: {

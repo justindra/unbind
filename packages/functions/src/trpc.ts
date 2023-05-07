@@ -1,6 +1,7 @@
 import { initTRPC } from '@trpc/server';
 import { awsLambdaRequestHandler } from '@trpc/server/adapters/aws-lambda';
 import { provideActor } from '@unbind/core/actors';
+import { Chats } from '@unbind/core/chats';
 import { Documents } from '@unbind/core/documents';
 import { Organizations } from '@unbind/core/organizations';
 import { Users } from '@unbind/core/users';
@@ -39,6 +40,7 @@ export const router = t.router({
   get_upload_urls_for_new_document: mutation(
     Documents.getUploadUrlsForNewDocument
   ),
+  send_message: mutation(Chats.sendMessage),
 });
 
 export type Router = typeof router;
