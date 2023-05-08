@@ -1,6 +1,6 @@
 import { assertActor } from '@unbind/core/actors';
-import { createChat } from '@unbind/core/chats';
-import { Documents } from '@unbind/core/documents';
+import { Chats } from '@unbind/core/entities/chats';
+import { Documents } from '@unbind/core/entities/documents';
 import { WebSocketConnections } from '@unbind/core/websocket-connections';
 import { useQueryParam } from 'sst/node/api';
 import { WebsocketApiHandler, useConnectionId } from './handler';
@@ -29,7 +29,7 @@ export const handler = WebsocketApiHandler(async () => {
 
   // If no chatId is provided then create a new chat
   if (!chatId) {
-    const res = await createChat({
+    const res = await Chats.createChat({
       organizationId: user.properties.userId,
       documentId,
       actorId: user.properties.userId,

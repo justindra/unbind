@@ -6,7 +6,7 @@
  * connection.
  */
 
-import { Documents } from '@unbind/core/documents';
+import { Documents } from '@unbind/core/entities/documents';
 import { WebSocketConnections } from '@unbind/core/websocket-connections';
 import { WebsocketApiHandler, useConnectionId } from './handler';
 

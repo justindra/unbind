@@ -1,13 +1,13 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { loadEmbeddingsFromS3Object } from '@unbind/core/analysis';
 import {
   getFile,
   getMetadataFromS3Key,
   updateFileAfterProcessing,
   updateFileStatus,
-} from '@unbind/core/documents';
-import { loadEmbeddingsFromS3Object } from '@unbind/core/analysis';
+} from '@unbind/core/entities/documents';
+import { getOpenAIKey } from '@unbind/core/entities/organizations';
 import { S3Handler } from 'aws-lambda';
-import { getOpenAIKey } from '@unbind/core/organizations';
 
 const client = new S3Client({});
 

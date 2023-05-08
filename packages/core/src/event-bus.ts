@@ -1,7 +1,4 @@
-import {
-  generateEventBusHelpers,
-  EventBridgeWrapper,
-} from 'jfsi/node/event-bus';
+import { generateEventBusHelpers } from 'jfsi/node/event-bus';
 import { EventBus } from 'sst/node/event-bus';
 
 declare module 'jfsi/node/event-bus' {

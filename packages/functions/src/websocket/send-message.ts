@@ -2,13 +2,9 @@ import {
   ApiGatewayManagementApiClient,
   PostToConnectionCommand,
 } from '@aws-sdk/client-apigatewaymanagementapi';
-import { Documents } from '@unbind/core/documents';
-import { WebSocketConnections } from '@unbind/core/websocket-connections';
 import { useJsonBody } from 'sst/node/api';
 import { WebsocketApiHandler, useConnectionId } from './handler';
-import { Config } from 'sst/node/config';
 import { WebSocketApi } from 'sst/node/api';
-// import { WebsocketApiHandler, useConnectionId } from 'sst/node/websocket-api';
 
 const sendMessage = async (connectionId: string, data: any) => {
   const client = new ApiGatewayManagementApiClient({

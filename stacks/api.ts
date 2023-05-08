@@ -1,17 +1,9 @@
-import {
-  StackContext,
-  Api,
-  Config,
-  use,
-  WebSocketApi,
-  AppSyncApi,
-  EventBus,
-} from 'sst/constructs';
+import { StackContext, Api, use, WebSocketApi } from 'sst/constructs';
 import { DataStack } from './data';
 import { AuthStack } from './auth';
 
 export function APIStack({ app, stack }: StackContext) {
-  const { table, filesBucket } = use(DataStack);
+  const { table, filesBucket, eventBus } = use(DataStack);
   const { auth } = use(AuthStack);
 
   // const openAI = Config.Secret.create(stack, 'OPENAI_API_KEY');
@@ -24,8 +16,6 @@ export function APIStack({ app, stack }: StackContext) {
   //     pinecone.PINECONE_INDEX,
   //   ],
   // });
-
-  const eventBus = new EventBus(stack, 'event-bus', {});
 
   // TRPC API
   const api = new Api(stack, 'api', {

@@ -1,10 +1,10 @@
 import { EntityItem, createSchema } from 'electrodb';
 import { generateOrganizationEntityDetails } from 'jfsi/node/entities';
-import { Configuration } from './dynamo';
+import { Configuration } from '../dynamo';
 import { Users } from './users';
-import { zod } from './zod';
+import { zod } from '../zod';
 import { z } from 'zod';
-import { assertActor } from './actors';
+import { assertActor } from '../actors';
 
 const OrgBase = generateOrganizationEntityDetails(
   Configuration,

@@ -5,22 +5,35 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@jfsi/react';
+import { useForm } from 'react-hook-form';
 
-export const SendMessage: React.FC = () => {
+type Inputs = {
+  message: string;
+};
+
+type SendMessageProps = {
+  onSendMessage: (message: string) => void;
+};
+
+export const SendMessage: React.FC<SendMessageProps> = ({ onSendMessage }) => {
+  const { control, handleSubmit, register } = useForm<Inputs>();
+
+  const sendMessage = handleSubmit(({ message }) => {
+    onSendMessage(message);
+  });
   return (
     <div className='p-4'>
       <div className='min-w-0 flex-1 relative'>
         <div className='overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-primary-600'>
-          <label htmlFor='comment' className='sr-only'>
-            Add your comment
+          <label htmlFor='message' className='sr-only'>
+            Add your message
           </label>
           <textarea
             rows={3}
-            name='comment'
-            id='comment'
+            id='message'
             className='block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6'
-            placeholder='Add your comment...'
-            defaultValue={''}
+            placeholder='Add your message...'
+            {...register('message')}
           />
 
           {/* Spacer element to match the height of the toolbar */}
@@ -45,7 +58,10 @@ export const SendMessage: React.FC = () => {
             </Button>
           </div>
           <div className='flex-shrink-0'>
-            <Button startIcon={PaperAirplaneIcon as any} variant='primary'>
+            <Button
+              startIcon={PaperAirplaneIcon as any}
+              variant='primary'
+              onClick={sendMessage}>
               Send
             </Button>
           </div>

@@ -1,8 +1,8 @@
 import {
   Organizations,
   Info as OrganizationInfo,
-} from '@unbind/core/organizations';
-import { Users, Info } from '@unbind/core/users';
+} from '@unbind/core/entities/organizations';
+import { Users, Info } from '@unbind/core/entities/users';
 import { Config } from 'sst/node/config';
 import {
   AuthHandler,
