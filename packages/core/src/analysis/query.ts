@@ -34,6 +34,10 @@ const setMessageFromContent = zod(
   })
 );
 
+/**
+ * Get a vector store for a given document so that we can use it to query for
+ * the embeddings.
+ */
 const getVectorStore = zod(
   z.object({
     openAIApiKey: z.string(),
@@ -154,6 +158,7 @@ export const queryDocumentChat = zod(
     chatHistory,
     timestamp,
   }) => {
+    // No chat history, let's just use the basic document query for now
     if (!chatHistory.length)
       return queryDocument({
         organizationId,

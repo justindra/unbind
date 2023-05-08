@@ -1,4 +1,4 @@
-import { queryDocument, queryDocumentChat } from '@unbind/core/analysis';
+import { queryDocumentChat } from '@unbind/core/analysis';
 import {
   completeMessageProcessing,
   getChatById,
@@ -8,6 +8,7 @@ import { Organizations } from '@unbind/core/entities/organizations';
 import { WebSocketConnections } from '@unbind/core/websocket-connections';
 import { ValidationException } from 'jfsi/node/errors';
 import { EventBridgeWrapper } from 'jfsi/node/event-bus';
+import { sendMessage } from '../websocket/utils';
 
 /**
  * Process a chat that is awaiting to be actioned by OpenAI
@@ -43,9 +44,11 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
   });
 
   //   TODO: get connections for a chat instead of user
-  const connections = await WebSocketConnections.getConnectionsByUserId('');
+  const connections = await WebSocketConnections.getConnectionsByUserId(
+    'user|01GZY14RV0WXZ5YGDNSB3KT291'
+  );
 
-  // Remove the last message from the chathistory as that is the query that we
+  // Remove the last message from the chat history as that is the query that we
   // want to send
   const chatHistory = currentChat.messages.slice(0, -1);
   const query = currentChat.messages[currentChat.messages.length - 1].content;
@@ -57,11 +60,24 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
     query,
     openAIApiKey,
     callback: connections.length
-      ? (token) => {
+      ? async (token) => {
           console.log(
             `token: ${token} to send to ${connections
               .map((val) => val.connectionId)
               .join(', ')}`
+          );
+
+          await Promise.all(
+            connections.map(async (val) => {
+              return sendMessage(val.connectionId, {
+                action: 'chats.message.updated',
+                data: {
+                  chatId: currentChat.chatId,
+                  index: currentChat.messages.length,
+                  content: token,
+                },
+              });
+            })
           );
         }
       : (token) => {

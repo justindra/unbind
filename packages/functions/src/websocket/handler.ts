@@ -1,7 +1,7 @@
 import { provideActor } from '@unbind/core/actors';
 import { APIGatewayEventWebsocketRequestContextV2 } from 'aws-lambda';
 import { Handler, useEvent } from 'sst/context';
-import { ApiHandler } from 'sst/node/api';
+import { ApiHandler, useHeaders } from 'sst/node/api';
 import { useSession } from 'sst/node/future/auth';
 
 // TODO: Once this PR is merged, replace with the official version

@@ -5,18 +5,7 @@ import {
 import { useJsonBody } from 'sst/node/api';
 import { WebsocketApiHandler, useConnectionId } from './handler';
 import { WebSocketApi } from 'sst/node/api';
-
-const sendMessage = async (connectionId: string, data: any) => {
-  const client = new ApiGatewayManagementApiClient({
-    endpoint: WebSocketApi['ws-api'].url.replace('wss://', 'https://'),
-  });
-  return client.send(
-    new PostToConnectionCommand({
-      ConnectionId: connectionId,
-      Data: new TextEncoder().encode(JSON.stringify(data)),
-    })
-  );
-};
+import { sendMessage } from './utils';
 
 export const handler = WebsocketApiHandler(async (event) => {
   const connectionId = useConnectionId();

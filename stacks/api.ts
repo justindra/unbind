@@ -43,7 +43,7 @@ export function APIStack({ app, stack }: StackContext) {
   const ws = new WebSocketApi(stack, 'ws-api', {
     defaults: {
       function: {
-        bind: [table, auth],
+        bind: [table, auth, eventBus],
       },
     },
     // customDomain: {
@@ -87,6 +87,7 @@ export function APIStack({ app, stack }: StackContext) {
               pinecone.PINECONE_API_KEY,
               pinecone.PINECONE_ENV,
               pinecone.PINECONE_INDEX,
+              ws,
             ],
             timeout: '5 minutes', // Just in case OpenAI takes a while to respond
           },
