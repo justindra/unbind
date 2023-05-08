@@ -58,6 +58,7 @@ export const setOpenAIKey = zod(
  * Get the OpenAI Key for the active organization
  */
 export const getOpenAIKey = zod(
+  /** Organization Id to use */
   z.string().optional(),
   async (organizationId) => {
     const organizationIdToUse =

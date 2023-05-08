@@ -1,6 +1,10 @@
 import { DDB_KEYS, generateChatEntityDetails } from 'jfsi/node/entities';
 import { Configuration } from '../../dynamo';
 
+// TODO: Replace with one from jfsi once released
+export const CHAT_MESSAGE_ROLE = ['system', 'user', 'assistant'] as const;
+export type ChatMessageRole = (typeof CHAT_MESSAGE_ROLE)[number];
+
 export const BaseChats = generateChatEntityDetails(Configuration, {
   service: 'unbind',
   version: '1',
@@ -35,6 +39,31 @@ export const BaseChats = generateChatEntityDetails(Configuration, {
                 [] as string[]
               )
           );
+        },
+      },
+      messages: {
+        type: 'list',
+        required: true,
+        default: [],
+        items: {
+          type: 'map',
+          properties: {
+            /** The role determines who sent that message */
+            role: {
+              type: CHAT_MESSAGE_ROLE,
+              required: true,
+            },
+            content: { type: 'string', required: true },
+            /** The id of the user that sent this message, if any */
+            userId: { type: 'string' },
+            /** The time the message was sent in as an ISO date */
+            timestamp: { type: 'string' },
+            /** Any resources that were used to provide context to this message */
+            resources: {
+              type: 'list',
+              items: { type: 'string' },
+            },
+          },
         },
       },
     },

@@ -43,5 +43,5 @@ export function DataStack({ app, stack }: StackContext) {
     },
   });
 
-  return { table, filesBucket, eventBus };
+  return { table, filesBucket, eventBus, pinecone };
 }

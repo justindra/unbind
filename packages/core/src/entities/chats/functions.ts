@@ -3,7 +3,15 @@ import { NotFoundException } from 'jfsi/node/errors';
 import { z } from 'zod';
 import { publishEvent } from '../../event-bus';
 import { zod } from '../../zod';
-import { BaseChats, ChatsEntity } from './base';
+import { BaseChats, CHAT_MESSAGE_ROLE, ChatsEntity } from './base';
+
+export const zMessage = z.object({
+  role: z.enum(CHAT_MESSAGE_ROLE),
+  content: z.string(),
+  userId: z.string().optional(),
+  timestamp: z.string().optional(),
+  resources: z.array(z.string()).optional(),
+});
 
 export const createChat = zod(
   z.object({
@@ -72,6 +80,46 @@ export const sendMessage = zod(
     });
 
     console.log(res);
+    return res.data;
+  }
+);
+
+export const setMessageToBeProcessing = zod(
+  z.object({
+    chatId: z.string(),
+    documentId: z.string(),
+    organizationId: z.string(),
+  }),
+  async ({ chatId, documentId, organizationId }) => {
+    const res = await BaseChats.setMessageToBeProcessing(
+      ChatsEntity.update({
+        chatId,
+        documentId,
+        organizationId,
+      })
+    ).go();
+
+    return res.data;
+  }
+);
+
+export const completeMessageProcessing = zod(
+  z.object({
+    chatId: z.string(),
+    documentId: z.string(),
+    organizationId: z.string(),
+    messages: z.array(zMessage),
+  }),
+  async ({ chatId, documentId, organizationId, messages }) => {
+    const res = await BaseChats.completeMessageProcessing(
+      ChatsEntity.update({
+        chatId,
+        documentId,
+        organizationId,
+      }),
+      messages
+    ).go({ response: 'all_new' });
+
     return res.data;
   }
 );

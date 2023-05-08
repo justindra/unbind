@@ -3,7 +3,7 @@ import { DataStack } from './data';
 import { AuthStack } from './auth';
 
 export function APIStack({ app, stack }: StackContext) {
-  const { table, filesBucket, eventBus } = use(DataStack);
+  const { table, filesBucket, eventBus, pinecone } = use(DataStack);
   const { auth } = use(AuthStack);
 
   // const openAI = Config.Secret.create(stack, 'OPENAI_API_KEY');
@@ -62,6 +62,35 @@ export function APIStack({ app, stack }: StackContext) {
       function: {
         handler: 'packages/functions/src/websocket/send-message.handler',
         bind: [ws],
+      },
+    },
+  });
+
+  eventBus.addRules(stack, {
+    ProcessAwaitingMessages: {
+      pattern: {
+        source: ['unbind'],
+        detailType: ['chats.awaiting'],
+      },
+      cdk: {
+        rule: {
+          description: 'Process a chat that is awaiting a response from OpenAI',
+        },
+      },
+      targets: {
+        processAwaitingChat: {
+          function: {
+            handler: 'packages/functions/src/chats/process-awaiting.handler',
+            bind: [
+              table,
+              eventBus,
+              pinecone.PINECONE_API_KEY,
+              pinecone.PINECONE_ENV,
+              pinecone.PINECONE_INDEX,
+            ],
+            timeout: '5 minutes', // Just in case OpenAI takes a while to respond
+          },
+        },
       },
     },
   });
