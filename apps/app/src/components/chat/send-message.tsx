@@ -13,14 +13,22 @@ type Inputs = {
 
 type SendMessageProps = {
   onSendMessage: (message: string) => void;
+  onActions?: (action: string) => void;
 };
 
-export const SendMessage: React.FC<SendMessageProps> = ({ onSendMessage }) => {
-  const { control, handleSubmit, register } = useForm<Inputs>();
+export const SendMessage: React.FC<SendMessageProps> = ({
+  onSendMessage,
+  onActions,
+}) => {
+  const { handleSubmit, register } = useForm<Inputs>();
 
   const sendMessage = handleSubmit(({ message }) => {
     onSendMessage(message);
   });
+
+  const handleAction = (action: string) => {
+    if (onActions) onActions(action);
+  };
   return (
     <div className='p-4'>
       <div className='min-w-0 flex-1 relative'>
@@ -47,13 +55,22 @@ export const SendMessage: React.FC<SendMessageProps> = ({ onSendMessage }) => {
 
         <div className='absolute inset-x-0 bottom-0 flex justify-between p-2'>
           <div className='flex gap-2'>
-            <Button size='sm' startIcon={BarsArrowUpIcon as any}>
+            <Button
+              size='sm'
+              startIcon={BarsArrowUpIcon as any}
+              onClick={() => handleAction('summarize')}>
               Summarize
             </Button>
-            <Button size='sm' startIcon={QuestionMarkCircleIcon as any}>
+            <Button
+              size='sm'
+              startIcon={QuestionMarkCircleIcon as any}
+              onClick={() => handleAction('random question')}>
               Random Question
             </Button>
-            <Button size='sm' startIcon={TrashIcon as any}>
+            <Button
+              size='sm'
+              startIcon={TrashIcon as any}
+              onClick={() => handleAction('clear')}>
               Clear Chat
             </Button>
           </div>

@@ -26,7 +26,7 @@ export const createChat = zod(
   }
 );
 
-const getChatById = zod(z.string(), async (chatId: string) => {
+export const getChatById = zod(z.string(), async (chatId: string) => {
   const res = await ChatsEntity.query.chatById({ chatId }).go();
   return res.data[0] ?? null;
 });

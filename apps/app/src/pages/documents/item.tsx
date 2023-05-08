@@ -1,8 +1,7 @@
 import { AppPageTitle, AuthUtils, Button } from '@jfsi/react';
-import React, { useEffect } from 'react';
-import { trpc } from '../../utils/trpc';
+import React from 'react';
+import { trpc, trpcClient } from '../../utils/trpc';
 import { getQueryKey } from '@trpc/react-query';
-import { trpcClient } from '../app-root';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { Card } from '../../components/card';
 import { DescriptionList } from '../../components/description-list';
@@ -13,8 +12,8 @@ import {
 import { FileList } from '../../components/file-list';
 import humanFormat from 'human-format';
 import { PencilIcon } from '@heroicons/react/24/outline';
-import { SendMessage } from '../../components/chat/send-message';
 import { useInterval } from '../../utils/hooks';
+import { ChatWindow } from '../../components/chat/window';
 
 export const DocumentItemPage: React.FC = () => {
   const mutation = trpc.send_message.useMutation();
@@ -42,12 +41,6 @@ export const DocumentItemPage: React.FC = () => {
   // TODO: If created or processing, show a loading indicator
 
   // TODO: If failed, show message and what to do next
-
-  const handleSendMessage = (message: string) => {
-    const chatId = data?.chats[0]?.chatId || chats[0]?.chatId;
-    mutation.mutate({ chatId, message, actorId: userId });
-  };
-
   return (
     <div className='flex flex-col h-full'>
       <AppPageTitle>
@@ -66,12 +59,13 @@ export const DocumentItemPage: React.FC = () => {
           </div>
         </div>
       </AppPageTitle>
-      <div className='flex gap-4 flex-1'>
+      <div className='flex gap-4 flex-1 h-[calc(100%_-_36px)]'>
         {/* Chat Card */}
         <Card className='flex-1 flex flex-col'>
-          <div className='flex-1'>hello</div>
+          <ChatWindow chatId={chats?.[0].chatId} />
+          {/* <div className='flex-1'>hello</div>
           <div className='border-b-2'></div>
-          <SendMessage onSendMessage={handleSendMessage} />
+          <SendMessage onSendMessage={handleSendMessage} /> */}
         </Card>
         {/* Information Card */}
         <div className='hidden lg:block w-96 '>

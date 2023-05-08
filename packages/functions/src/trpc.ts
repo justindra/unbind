@@ -41,6 +41,7 @@ export const router = t.router({
     Documents.getUploadUrlsForNewDocument
   ),
   send_message: mutation(Chats.sendMessage),
+  get_chat_by_id: query(Chats.getChatById),
 });
 
 export type Router = typeof router;
