@@ -17,7 +17,7 @@ import { GoneException } from '@aws-sdk/client-apigatewaymanagementapi';
 export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
   if (evt['detail-type'] !== 'chats.awaiting') return;
 
-  const { chatId, documentId, organizationId } = evt.detail;
+  const { chatId, documentId, organizationId, userId } = evt.detail;
 
   const openAIApiKey = await Organizations.getOpenAIKey(organizationId);
 
@@ -44,10 +44,8 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
     organizationId: currentChat.organizationId,
   });
 
-  //   TODO: get connections for a chat instead of user
-  let connections = await WebSocketConnections.getConnectionsByUserId(
-    'user|01GZY14RV0WXZ5YGDNSB3KT291'
-  );
+  // Get the connections for the user that instantiated the chat
+  let connections = await WebSocketConnections.getConnectionsByUserId(userId);
 
   // Remove the last message from the chat history as that is the query that we
   // want to send

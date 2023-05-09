@@ -75,10 +75,7 @@ export const DocumentItemPage: React.FC = () => {
     ['created', 'processing'].includes(documentToUse.status) ? 5000 : null
   );
 
-  // TODO: If created or processing, show a loading indicator
-
-  // TODO: If failed, show message and what to do next
-  const chatId = chats?.[0]?.chatId;
+  const chatId = chats?.[0]?.chatId || data?.chats?.[0]?.chatId;
   return (
     <div className='flex flex-col h-full'>
       <AppPageTitle>
@@ -114,18 +111,23 @@ export const DocumentItemPage: React.FC = () => {
               icon={DocumentIcon}
             />
           )}
-          {chatId ? (
-            <ChatWindow chatId={chatId} documentId={documentToUse.documentId} />
-          ) : (
-            <Empty
-              title='Document Ready'
-              description='Your document is now ready to be queried. Start a chat to get started.'
-              icon={DocumentIcon}
-              actions={
-                <CreateNewChatButton documentId={documentToUse.documentId} />
-              }
-            />
-          )}
+          {documentToUse.status === 'ready' ? (
+            chatId ? (
+              <ChatWindow
+                chatId={chatId}
+                documentId={documentToUse.documentId}
+              />
+            ) : (
+              <Empty
+                title='Document Ready'
+                description='Your document is now ready to be queried. Start a chat to get started.'
+                icon={DocumentIcon}
+                actions={
+                  <CreateNewChatButton documentId={documentToUse.documentId} />
+                }
+              />
+            )
+          ) : null}
         </Card>
         {/* Information Card */}
         <div className='hidden lg:block w-96 '>

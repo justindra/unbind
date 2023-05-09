@@ -7,6 +7,7 @@ declare module 'jfsi/node/event-bus' {
       organizationId: string;
       documentId: string;
       chatId: string;
+      userId: string;
     };
   }
 }

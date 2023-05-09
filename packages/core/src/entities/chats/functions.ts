@@ -95,6 +95,7 @@ export const sendMessage = zod(
       organizationId: chat.organizationId,
       documentId: chat.documentId,
       chatId: chat.chatId || chatId,
+      userId: actorId,
     });
 
     return res.data;
