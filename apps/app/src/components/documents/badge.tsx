@@ -1,4 +1,7 @@
-import type { DocumentStatus, FileStatus } from '@unbind/core/documents';
+import type {
+  DocumentStatus,
+  FileStatus,
+} from '@unbind/core/entities/documents';
 import { capitalCase } from 'change-case';
 import React from 'react';
 import { Badge, BadgeVariants, BadgeProps } from '../badge';

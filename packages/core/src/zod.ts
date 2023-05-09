@@ -10,8 +10,8 @@ import { DateTime } from 'luxon';
 export function zod<
   Schema extends z.ZodSchema<any, any, any>,
   Return extends any
->(schema: Schema, func: (value: z.infer<Schema>) => Return) {
-  const result = (input: z.infer<Schema>, skipParse?: boolean) => {
+>(schema: Schema, func: (value: z.input<Schema>) => Return) {
+  const result = (input: z.input<Schema>, skipParse?: boolean) => {
     const parsed = skipParse ? input : result.schema.parse(input);
     return func(parsed);
   };

@@ -1,5 +1,5 @@
 import { generateDefaultTableOptions } from 'jfsi/constructs';
-import { Bucket, Config, StackContext, Table } from 'sst/constructs';
+import { Bucket, Config, EventBus, StackContext, Table } from 'sst/constructs';
 
 export function DataStack({ app, stack }: StackContext) {
   // The DDB table that stores all the data
@@ -16,6 +16,8 @@ export function DataStack({ app, stack }: StackContext) {
       },
     ],
   });
+
+  const eventBus = new EventBus(stack, 'event-bus', {});
 
   const pinecone = Config.Secret.create(
     stack,
@@ -34,11 +36,12 @@ export function DataStack({ app, stack }: StackContext) {
           pinecone.PINECONE_API_KEY,
           pinecone.PINECONE_ENV,
           pinecone.PINECONE_INDEX,
+          eventBus,
         ],
       },
       events: ['object_created'],
     },
   });
 
-  return { table, filesBucket };
+  return { table, filesBucket, eventBus, pinecone };
 }

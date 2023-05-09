@@ -1,9 +1,10 @@
 import { initTRPC } from '@trpc/server';
 import { awsLambdaRequestHandler } from '@trpc/server/adapters/aws-lambda';
 import { provideActor } from '@unbind/core/actors';
-import { Documents } from '@unbind/core/documents';
-import { Organizations } from '@unbind/core/organizations';
-import { Users } from '@unbind/core/users';
+import { Chats } from '@unbind/core/entities/chats';
+import { Documents } from '@unbind/core/entities/documents';
+import { Organizations } from '@unbind/core/entities/organizations';
+import { Users } from '@unbind/core/entities/users';
 import { ApiHandler } from 'sst/node/api';
 import { useSession } from 'sst/node/future/auth';
 import { ZodError, z } from 'zod';
@@ -39,6 +40,9 @@ export const router = t.router({
   get_upload_urls_for_new_document: mutation(
     Documents.getUploadUrlsForNewDocument
   ),
+  send_message: mutation(Chats.sendMessage),
+  get_chat_by_id: query(Chats.getChatById),
+  create_chat: mutation(Chats.createChat),
 });
 
 export type Router = typeof router;

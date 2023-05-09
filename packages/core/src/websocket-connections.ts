@@ -18,8 +18,11 @@ const WebSocketConnectionsEntity = new Entity(
     },
     attributes: {
       ...AUDIT_FIELDS,
+      organizationId: { type: 'string', required: true },
       userId: { type: 'string', required: true },
+      documentId: { type: 'string', required: true },
       connectionId: { type: 'string', required: true },
+      chatId: { type: 'string', required: true },
       status: { type: ['connected', 'disconnected'], required: true },
       connectedAt: { type: 'string', required: true },
       disconnectedAt: { type: 'string' },
@@ -32,7 +35,7 @@ const WebSocketConnectionsEntity = new Entity(
         },
         sk: {
           field: DDB_KEYS.defaultIndex.sortKey,
-          composite: ['connectionId'],
+          composite: ['documentId', 'chatId', 'connectionId'],
         },
       },
       connectionsById: {
@@ -55,11 +58,17 @@ export const connect = zod(
   z.object({
     connectionId: z.string(),
     userId: z.string(),
+    organizationId: z.string(),
+    documentId: z.string(),
+    chatId: z.string(),
   }),
-  async ({ connectionId, userId }) => {
+  async ({ connectionId, userId, organizationId, documentId, chatId }) => {
     const res = await WebSocketConnectionsEntity.create({
       userId,
+      documentId,
       connectionId,
+      organizationId,
+      chatId,
       status: 'connected',
       connectedAt: new Date().toISOString(),
     }).go();
@@ -75,12 +84,14 @@ export const connect = zod(
 export const disconnect = zod(
   z.object({
     connectionId: z.string(),
-    userId: z.string(),
   }),
-  async ({ connectionId, userId }) => {
+  async ({ connectionId }) => {
+    const connection = await getConnectionById(connectionId);
     const res = await WebSocketConnectionsEntity.update({
-      userId,
-      connectionId,
+      userId: connection.userId,
+      connectionId: connection.connectionId,
+      documentId: connection.documentId,
+      chatId: connection.chatId,
     })
       .set({
         status: 'disconnected',
@@ -97,9 +108,7 @@ export const disconnect = zod(
  */
 export const getConnectionById = zod(z.string(), async (connectionId) => {
   const res = await WebSocketConnectionsEntity.query
-    .connectionsById({
-      connectionId,
-    })
+    .connectionsById({ connectionId })
     .go();
 
   return res.data[0];

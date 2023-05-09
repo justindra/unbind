@@ -1,11 +1,10 @@
-import { DocumentDuplicateIcon, HomeIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon } from '@heroicons/react/24/outline';
 import { AuthUtils, AppSidebarLayout } from '@jfsi/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
-import React, { useEffect, useState } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
 import { Outlet, redirect, useLoaderData } from 'react-router-dom';
 import { COMPANY_NAME } from '../constants';
-import { trpc } from '../utils/trpc';
+import { queryClient, trpc, trpcClient } from '../utils/trpc';
 import { SetOpenAIKeyModal } from '../components/set-open-ai-key-modal';
 
 const OpenAIApiKeyModal = () => {
@@ -21,21 +20,6 @@ const OpenAIApiKeyModal = () => {
 
   return <SetOpenAIKeyModal />;
 };
-
-export const queryClient = new QueryClient();
-export const trpcClient = trpc.createClient({
-  links: [
-    httpBatchLink({
-      url: import.meta.env.VITE_API_ENDPOINT,
-      // You can pass any HTTP headers you wish here
-      async headers() {
-        return {
-          authorization: `Bearer ${AuthUtils.getToken()}` || '',
-        };
-      },
-    }),
-  ],
-});
 
 export const AppRoot: React.FC = () => {
   const { currentUser } = useLoaderData() as Awaited<ReturnType<typeof loader>>;

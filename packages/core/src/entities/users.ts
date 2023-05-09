@@ -1,7 +1,7 @@
 import { EntityItem } from 'electrodb';
 import { generateUserEntityDetails } from 'jfsi/node/entities';
-import { Configuration } from './dynamo';
-import { zod } from './zod';
+import { Configuration } from '../dynamo';
+import { zod } from '../zod';
 import { z } from 'zod';
 
 const UsersBase = generateUserEntityDetails(Configuration, {

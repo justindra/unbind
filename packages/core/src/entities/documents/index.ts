@@ -4,9 +4,11 @@ import { Entity, EntityItem, Service } from 'electrodb';
 import { AUDIT_FIELDS, DDB_KEYS, generateId } from 'jfsi/node/entities';
 import { Bucket } from 'sst/node/bucket';
 import { z } from 'zod';
-import { assertActor } from './actors';
-import { zod } from './zod';
-import { Configuration } from './dynamo';
+import { assertActor } from '../../actors';
+import { zod } from '../../zod';
+import { Configuration } from '../../dynamo';
+import { ChatsEntity } from '../chats/base';
+import { createChat } from '../chats/functions';
 
 const s3 = new S3Client({});
 
@@ -123,6 +125,7 @@ const FilesEntity = new Entity(
 const DocumentService = new Service({
   documents: DocumentsEntity,
   files: FilesEntity,
+  chats: ChatsEntity,
 });
 
 export const listDocuments = zod(z.void(), async () => {
@@ -255,7 +258,7 @@ export const getUploadUrlsForNewDocument = zod(
 );
 
 /**
- * Get a document and all of it's related files by the document's id.
+ * Get a document and all of it's related files and chats by the document's id.
  * @param documentId The document's id
  */
 export const getDocumentById = zod(
@@ -340,13 +343,16 @@ const updateDocumentStatusFromFile = zod(
 
     // If the document's status has changed, update it
     if (documentStatus !== data.documents[0].status) {
-      await DocumentsEntity.update({
+      const res = await DocumentsEntity.update({
         organizationId,
         documentId,
       })
         .set({ status: documentStatus })
         .go();
+
+      return { ...data, documents: [res.data] };
     }
+    return data;
   }
 );
 
@@ -411,10 +417,18 @@ export const updateFileAfterProcessing = zod(
       })
       .go({ response: 'all_new' });
 
-    await updateDocumentStatusFromFile({ organizationId, documentId });
+    const document = await updateDocumentStatusFromFile({
+      organizationId,
+      documentId,
+    });
+
+    // If no chat has been created then add the first empty one
+    if (!document.chats.length) {
+      await createChat({ organizationId, documentId });
+    }
 
     return res.data;
   }
 );
 
-export * as Documents from './documents';
+export * as Documents from '.';
