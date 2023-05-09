@@ -6,17 +6,6 @@ export function APIStack({ app, stack }: StackContext) {
   const { table, filesBucket, eventBus, pinecone } = use(DataStack);
   const { auth } = use(AuthStack);
 
-  // const openAI = Config.Secret.create(stack, 'OPENAI_API_KEY');
-  // new Function(stack, 'TestFunction', {
-  //   handler: 'packages/functions/src/test.handler',
-  //   bind: [
-  //     openAI.OPENAI_API_KEY,
-  //     pinecone.PINECONE_API_KEY,
-  //     pinecone.PINECONE_ENV,
-  //     pinecone.PINECONE_INDEX,
-  //   ],
-  // });
-
   // TRPC API
   const api = new Api(stack, 'api', {
     defaults: {
@@ -54,15 +43,6 @@ export function APIStack({ app, stack }: StackContext) {
       $connect: 'packages/functions/src/websocket/connect.handler',
       $disconnect: 'packages/functions/src/websocket/disconnect.handler',
       $default: 'packages/functions/src/websocket/default.handler',
-    },
-  });
-
-  ws.addRoutes(stack, {
-    ['send-message']: {
-      function: {
-        handler: 'packages/functions/src/websocket/send-message.handler',
-        bind: [ws],
-      },
     },
   });
 
