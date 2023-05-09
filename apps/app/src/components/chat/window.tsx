@@ -38,7 +38,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     if (data && data.status) {
       setLoading(data.status !== 'idle');
     }
-    console.log(data?.status);
   }, [data?.status]);
 
   const handleSendMessage = (message: string) => {

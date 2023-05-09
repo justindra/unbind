@@ -38,6 +38,7 @@ export async function loadEmbeddingsFromS3Object(
       ...text.metadata,
       fileId,
       documentId,
+      filename: s3Object.Metadata?.fileName,
     },
   }));
 

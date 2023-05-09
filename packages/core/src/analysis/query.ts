@@ -3,7 +3,7 @@ import {
   ConversationalRetrievalQAChain,
   loadQAMapReduceChain,
 } from 'langchain/chains';
-import { OpenAI } from 'langchain/llms/openai';
+import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Config } from 'sst/node/config';
@@ -12,6 +12,8 @@ import { z } from 'zod';
 import { zMessage } from '../entities/chats/functions';
 import { CHAT_MESSAGE_ROLE, ChatMessageRole } from '../entities/chats/base';
 import type { Document } from 'langchain/document';
+
+const OPEN_AI_MODEL = 'gpt-4';
 
 const zCallbackFn = z
   .function()
@@ -100,10 +102,11 @@ export const queryDocument = zod(
 
     const relevantDocs = await vectorStore.similaritySearch(query, 4);
 
-    const llm = new OpenAI({
+    const llm = new OpenAIChat({
       temperature: 0,
       openAIApiKey,
       streaming: streamResults,
+      modelName: OPEN_AI_MODEL,
     });
     const chain = loadQAMapReduceChain(llm);
     const res = await chain.call(
@@ -176,10 +179,11 @@ export const queryDocumentChat = zod(
       documentId,
     });
 
-    const llm = new OpenAI({
+    const llm = new OpenAIChat({
       temperature: 0,
       openAIApiKey,
       streaming: streamResults,
+      modelName: OPEN_AI_MODEL,
     });
 
     const chain = ConversationalRetrievalQAChain.fromLLM(

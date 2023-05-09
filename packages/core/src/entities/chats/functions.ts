@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { publishEvent } from '../../event-bus';
 import { zod } from '../../zod';
 import { BaseChats, CHAT_MESSAGE_ROLE, ChatsEntity } from './base';
+import { useActor } from '../../actors';
 
 export const zMessage = z.object({
   role: z.enum(CHAT_MESSAGE_ROLE),
@@ -15,17 +16,31 @@ export const zMessage = z.object({
 
 export const createChat = zod(
   z.object({
-    organizationId: z.string(),
     documentId: z.string(),
+    organizationId: z.string().optional(),
     actorId: z.string().optional(),
   }),
   async ({ organizationId, documentId, actorId }) => {
+    const actor = useActor();
+
+    let organizationIdToUse = organizationId;
+    let actorIdToUse = actorId;
+    if (actor.type === 'user') {
+      if (!organizationIdToUse) {
+        organizationIdToUse = actor.properties.organizationId;
+      }
+
+      if (!actorIdToUse) {
+        actorIdToUse = actor.properties.userId;
+      }
+    }
+
     const res = await ChatsEntity.create({
-      organizationId,
+      organizationId: organizationIdToUse,
       documentId,
       chatId: generateId(`chat`),
-      participantIds: actorId ? [actorId] : [],
-      createdBy: actorId,
+      participantIds: actorIdToUse ? [actorIdToUse] : [],
+      createdBy: actorIdToUse,
       status: 'idle',
       messages: [],
     } as any).go();
@@ -79,7 +94,6 @@ export const sendMessage = zod(
       chatId: chat.chatId || chatId,
     });
 
-    console.log(res);
     return res.data;
   }
 );

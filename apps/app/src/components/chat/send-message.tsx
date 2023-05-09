@@ -60,7 +60,8 @@ export const SendMessage: React.FC<SendMessageProps> = ({
 
         <div className='absolute inset-x-0 bottom-0 flex justify-between p-2'>
           <div className='flex gap-2'>
-            <Button
+            {/* TODO: ADD SOME ACTIONS */}
+            {/* <Button
               size='sm'
               startIcon={BarsArrowUpIcon as any}
               onClick={() => handleAction('summarize')}
@@ -81,6 +82,7 @@ export const SendMessage: React.FC<SendMessageProps> = ({
               disabled={loading}>
               Clear Chat
             </Button>
+          */}
           </div>
           <div className='flex-shrink-0'>
             <Button
@@ -93,7 +95,7 @@ export const SendMessage: React.FC<SendMessageProps> = ({
           </div>
         </div>
       </div>
-      <p className='mt-2 px-4 text-sm italic text-gray-400'>
+      <p className='mt-2 px-4 text-xs italic text-gray-400'>
         Powered by OpenAI
       </p>
     </div>

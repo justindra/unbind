@@ -2,6 +2,8 @@ import { AuthUtils } from '@jfsi/react';
 import ReactMarkdown from 'react-markdown';
 import { COMPANY_NAME } from '../../constants';
 import { DateTime } from 'luxon';
+import React from 'react';
+import { Badge } from '../badge';
 
 type MessageListProps = {
   messages: {
@@ -9,6 +11,7 @@ type MessageListProps = {
     role: 'user' | 'assistant' | 'system';
     timestamp?: string;
     userId?: string;
+    resources?: string[];
   }[];
 };
 
@@ -57,6 +60,14 @@ export const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                       </span>
                     </div>
                   )}
+                  {message.resources?.length && (
+                    <div className='mt-2 border-t-2'>
+                      <p className='text-sm italic my-2'>Sources: </p>
+                      {message.resources.map((resource, index) => (
+                        <ResourceLink key={index} resource={resource} />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </li>
@@ -64,5 +75,39 @@ export const MessageList: React.FC<MessageListProps> = ({ messages }) => {
         })}
       </ul>
     </div>
+  );
+};
+
+const parseResource = (resource: string) => {
+  try {
+    const obj = JSON.parse(resource);
+    return {
+      fileId: obj.fileId,
+      documentId: obj.documentId,
+      pageNumber: obj['loc.pageNumber'],
+      lines: {
+        from: obj['loc.lines.from'],
+        to: obj['loc.lines.to'],
+      },
+      filename: obj.filename || obj['pdf.info.Title'],
+    };
+  } catch (error) {
+    return {
+      fileId: '',
+      documentId: '',
+      pageNumber: 0,
+      lines: { from: 0, to: 0 },
+      filename: '',
+    };
+  }
+};
+
+const ResourceLink: React.FC<{ resource: string }> = ({ resource }) => {
+  const obj = parseResource(resource);
+  if (!obj.fileId) return null;
+  return (
+    <Badge className='mr-2'>
+      {obj.filename} - Page {obj.pageNumber} ({obj.lines.from}:{obj.lines.to})
+    </Badge>
   );
 };

@@ -42,6 +42,7 @@ export const router = t.router({
   ),
   send_message: mutation(Chats.sendMessage),
   get_chat_by_id: query(Chats.getChatById),
+  create_chat: mutation(Chats.createChat),
 });
 
 export type Router = typeof router;

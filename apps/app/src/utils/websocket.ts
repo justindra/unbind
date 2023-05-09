@@ -2,10 +2,10 @@ import { AuthUtils } from '@jfsi/react';
 import { getQueryKey } from '@trpc/react-query';
 import useWebSocket from 'react-use-websocket';
 import { queryClient, trpc } from './trpc';
+import { QueryKey } from '@tanstack/react-query';
 
-function updateChat(chatId: string, index: number, content: string) {
-  const key = getQueryKey(trpc.get_chat_by_id, chatId, 'query');
-  queryClient.setQueryData(key, (oldData: any) => {
+function updateChat(queryKey: QueryKey, index: number, content: string) {
+  queryClient.setQueryData(queryKey, (oldData: any) => {
     if (oldData.messages.length === index + 1) {
       return {
         ...oldData,
@@ -34,6 +34,7 @@ function updateChat(chatId: string, index: number, content: string) {
 
 export const useWSConnection = (documentId: string, chatId: string) => {
   const token = AuthUtils.getToken();
+  const queryKey = getQueryKey(trpc.get_chat_by_id, chatId, 'query');
   const res = useWebSocket(import.meta.env.VITE_WS_ENDPOINT, {
     queryParams: {
       documentId: encodeURIComponent(documentId),
@@ -46,15 +47,14 @@ export const useWSConnection = (documentId: string, chatId: string) => {
         const { chatId: updatedChatId, index, content } = data.data;
         if (chatId === updatedChatId) {
           const indexInt = parseInt(index, 10);
-          updateChat(chatId, indexInt, content);
+          updateChat(queryKey, indexInt, content);
         }
         return;
       }
       if (data.action === 'chats.status.updated') {
         const { chatId: updatedChatId, status } = data.data;
         if (chatId === updatedChatId) {
-          const key = getQueryKey(trpc.get_chat_by_id, chatId, 'query');
-          queryClient.setQueryData(key, (oldData: any) => {
+          queryClient.setQueryData(queryKey, (oldData: any) => {
             return {
               ...oldData,
               status,

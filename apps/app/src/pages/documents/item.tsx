@@ -1,6 +1,6 @@
-import { AppPageTitle, AuthUtils, Button } from '@jfsi/react';
-import React from 'react';
-import { trpc, trpcClient } from '../../utils/trpc';
+import { AppPageTitle, AuthUtils, Button, Empty } from '@jfsi/react';
+import React, { useState } from 'react';
+import { queryClient, trpc, trpcClient } from '../../utils/trpc';
 import { getQueryKey } from '@trpc/react-query';
 import { LoaderFunction, useLoaderData } from 'react-router-dom';
 import { Card } from '../../components/card';
@@ -11,9 +11,48 @@ import {
 } from '../../components/documents/badge';
 import { FileList } from '../../components/file-list';
 import humanFormat from 'human-format';
-import { PencilIcon } from '@heroicons/react/24/outline';
+import {
+  ChatBubbleLeftRightIcon,
+  DocumentIcon,
+  PencilIcon,
+} from '@heroicons/react/24/outline';
 import { useInterval } from '../../utils/hooks';
 import { ChatWindow } from '../../components/chat/window';
+
+const CreateNewChatButton: React.FC<{ documentId: string }> = ({
+  documentId,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const { mutate } = trpc.create_chat.useMutation({
+    onSettled() {
+      setLoading(false);
+    },
+    onSuccess(data) {
+      const key = getQueryKey(trpc.get_document_by_id, { documentId }, 'query');
+      queryClient.setQueryData(key, (oldData: any) => {
+        console.log(oldData, data);
+        return {
+          ...oldData,
+          chats: [...(oldData?.chats ?? []), data],
+        };
+      });
+    },
+  });
+
+  const handleCreateChat = () => {
+    setLoading(true);
+    mutate({ documentId });
+  };
+  return (
+    <Button
+      variant='primary'
+      startIcon={ChatBubbleLeftRightIcon}
+      onClick={handleCreateChat}
+      loading={loading}>
+      Start Chat
+    </Button>
+  );
+};
 
 export const DocumentItemPage: React.FC = () => {
   const {
@@ -61,8 +100,31 @@ export const DocumentItemPage: React.FC = () => {
       <div className='flex gap-4 flex-1 h-[calc(100%_-_36px)]'>
         {/* Chat Card */}
         <Card className='flex-1 flex flex-col'>
-          {chatId && (
+          {['created', 'processing'].includes(documentToUse.status) && (
+            <Empty
+              title='Document Processing...'
+              description='Your document is currently being processed. Depending on the size, it may take a few minutes before it will be ready.'
+              icon={DocumentIcon}
+            />
+          )}
+          {documentToUse.status === 'failed' && (
+            <Empty
+              title='Document Processing Failed'
+              description='Your document failed to process. Please try again. If the problem persists, please contact support.'
+              icon={DocumentIcon}
+            />
+          )}
+          {chatId ? (
             <ChatWindow chatId={chatId} documentId={documentToUse.documentId} />
+          ) : (
+            <Empty
+              title='Document Ready'
+              description='Your document is now ready to be queried. Start a chat to get started.'
+              icon={DocumentIcon}
+              actions={
+                <CreateNewChatButton documentId={documentToUse.documentId} />
+              }
+            />
           )}
         </Card>
         {/* Information Card */}
