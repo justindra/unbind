@@ -14,16 +14,20 @@ type Inputs = {
 type SendMessageProps = {
   onSendMessage: (message: string) => void;
   onActions?: (action: string) => void;
+  loading?: boolean;
 };
 
 export const SendMessage: React.FC<SendMessageProps> = ({
   onSendMessage,
   onActions,
+  loading = false,
 }) => {
-  const { handleSubmit, register } = useForm<Inputs>();
+  const { handleSubmit, register, resetField } = useForm<Inputs>();
 
   const sendMessage = handleSubmit(({ message }) => {
+    if (!message) return;
     onSendMessage(message);
+    resetField('message');
   });
 
   const handleAction = (action: string) => {
@@ -42,6 +46,7 @@ export const SendMessage: React.FC<SendMessageProps> = ({
             className='block w-full resize-none border-0 bg-transparent py-1.5 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6'
             placeholder='Add your message...'
             {...register('message')}
+            disabled={loading}
           />
 
           {/* Spacer element to match the height of the toolbar */}
@@ -58,19 +63,22 @@ export const SendMessage: React.FC<SendMessageProps> = ({
             <Button
               size='sm'
               startIcon={BarsArrowUpIcon as any}
-              onClick={() => handleAction('summarize')}>
+              onClick={() => handleAction('summarize')}
+              disabled={loading}>
               Summarize
             </Button>
             <Button
               size='sm'
               startIcon={QuestionMarkCircleIcon as any}
-              onClick={() => handleAction('random question')}>
+              onClick={() => handleAction('random question')}
+              disabled={loading}>
               Random Question
             </Button>
             <Button
               size='sm'
               startIcon={TrashIcon as any}
-              onClick={() => handleAction('clear')}>
+              onClick={() => handleAction('clear')}
+              disabled={loading}>
               Clear Chat
             </Button>
           </div>
@@ -78,7 +86,8 @@ export const SendMessage: React.FC<SendMessageProps> = ({
             <Button
               startIcon={PaperAirplaneIcon as any}
               variant='primary'
-              onClick={sendMessage}>
+              onClick={sendMessage}
+              loading={loading}>
               Send
             </Button>
           </div>

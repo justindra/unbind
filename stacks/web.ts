@@ -3,7 +3,7 @@ import { APIStack } from './api';
 import { AuthStack } from './auth';
 
 export function WebStack({ app, stack }: StackContext) {
-  const { api } = use(APIStack);
+  const { api, ws } = use(APIStack);
   const { auth } = use(AuthStack);
 
   const appSite = new StaticSite(stack, 'app', {
@@ -13,6 +13,7 @@ export function WebStack({ app, stack }: StackContext) {
     environment: {
       VITE_API_ENDPOINT: api.customDomainUrl || api.url,
       VITE_AUTH_ENDPOINT: auth.url,
+      VITE_WS_ENDPOINT: ws.customDomainUrl || ws.url,
       //   VITE_APP_ENDPOINT: isProduction(app.stage)
       //     ? DomainUtils.getWebUrl(app)
       //     : 'http://localhost:5173',

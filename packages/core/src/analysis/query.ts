@@ -16,7 +16,7 @@ import type { Document } from 'langchain/document';
 const zCallbackFn = z
   .function()
   .args(z.string(), z.string(), z.string().optional())
-  .returns(z.void())
+  .returns(z.union([z.void(), z.promise(z.void())]))
   .optional();
 
 const setMessageFromContent = zod(

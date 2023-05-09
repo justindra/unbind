@@ -101,7 +101,5 @@ export function APIStack({ app, stack }: StackContext) {
     websocketUrl: ws.customDomainUrl || ws.url,
   });
 
-  return {
-    api,
-  };
+  return { api, ws };
 }

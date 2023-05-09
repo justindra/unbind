@@ -95,5 +95,17 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
     organizationId: currentChat.organizationId,
     messages: res.messages,
   });
+
+  await Promise.all(
+    connections.map(async (val) => {
+      return sendMessage(val.connectionId, {
+        action: 'chats.status.updated',
+        data: {
+          chatId: currentChat.chatId,
+          status: updatedChat.status,
+        },
+      });
+    })
+  );
   console.log(`Chat ${updatedChat.chatId} updated to idle`);
 });

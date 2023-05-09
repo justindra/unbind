@@ -1,4 +1,4 @@
-import type { DocumentInfo } from '@unbind/core/documents';
+import type { DocumentInfo } from '@unbind/core/entities/documents';
 import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import { DocumentTextIcon } from '@heroicons/react/24/outline';
 import React from 'react';

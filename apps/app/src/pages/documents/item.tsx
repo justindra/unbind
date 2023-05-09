@@ -16,11 +16,9 @@ import { useInterval } from '../../utils/hooks';
 import { ChatWindow } from '../../components/chat/window';
 
 export const DocumentItemPage: React.FC = () => {
-  const mutation = trpc.send_message.useMutation();
   const {
     documentId,
     query: { documents, files, chats },
-    userId,
   } = useLoaderData() as ReturnType<typeof documentItemPageLoader>;
   const doc = documents[0];
   const { data, refetch } = trpc.get_document_by_id.useQuery(
@@ -41,6 +39,7 @@ export const DocumentItemPage: React.FC = () => {
   // TODO: If created or processing, show a loading indicator
 
   // TODO: If failed, show message and what to do next
+  const chatId = chats?.[0]?.chatId;
   return (
     <div className='flex flex-col h-full'>
       <AppPageTitle>
@@ -62,10 +61,9 @@ export const DocumentItemPage: React.FC = () => {
       <div className='flex gap-4 flex-1 h-[calc(100%_-_36px)]'>
         {/* Chat Card */}
         <Card className='flex-1 flex flex-col'>
-          <ChatWindow chatId={chats?.[0].chatId} />
-          {/* <div className='flex-1'>hello</div>
-          <div className='border-b-2'></div>
-          <SendMessage onSendMessage={handleSendMessage} /> */}
+          {chatId && (
+            <ChatWindow chatId={chatId} documentId={documentToUse.documentId} />
+          )}
         </Card>
         {/* Information Card */}
         <div className='hidden lg:block w-96 '>
