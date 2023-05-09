@@ -9,6 +9,7 @@ import { WebSocketConnections } from '@unbind/core/websocket-connections';
 import { ValidationException } from 'jfsi/node/errors';
 import { EventBridgeWrapper } from 'jfsi/node/event-bus';
 import { sendMessage } from '../websocket/utils';
+import { GoneException } from '@aws-sdk/client-apigatewaymanagementapi';
 
 /**
  * Process a chat that is awaiting to be actioned by OpenAI
@@ -44,7 +45,7 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
   });
 
   //   TODO: get connections for a chat instead of user
-  const connections = await WebSocketConnections.getConnectionsByUserId(
+  let connections = await WebSocketConnections.getConnectionsByUserId(
     'user|01GZY14RV0WXZ5YGDNSB3KT291'
   );
 
@@ -69,14 +70,34 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
 
           await Promise.all(
             connections.map(async (val) => {
-              return sendMessage(val.connectionId, {
-                action: 'chats.message.updated',
-                data: {
-                  chatId: currentChat.chatId,
-                  index: currentChat.messages.length,
-                  content: token,
-                },
-              });
+              try {
+                const res = await sendMessage(val.connectionId, {
+                  action: 'chats.message.updated',
+                  data: {
+                    chatId: currentChat.chatId,
+                    index: currentChat.messages.length,
+                    content: token,
+                  },
+                });
+                return res;
+              } catch (error) {
+                // If there's a GoneException error, then we want to make sure
+                // that we disconnect the connection and remove it from the
+                // connections array.
+                if (
+                  error instanceof GoneException &&
+                  error.$metadata.httpStatusCode === 410
+                ) {
+                  await WebSocketConnections.disconnect({
+                    connectionId: val.connectionId,
+                  });
+                  connections = connections.filter(
+                    (conn) => conn.connectionId !== val.connectionId
+                  );
+                } else {
+                  console.log('here', typeof error, error);
+                }
+              }
             })
           );
         }

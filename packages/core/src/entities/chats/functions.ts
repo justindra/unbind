@@ -21,18 +21,21 @@ export const createChat = zod(
     actorId: z.string().optional(),
   }),
   async ({ organizationId, documentId, actorId }) => {
-    const actor = useActor();
-
     let organizationIdToUse = organizationId;
     let actorIdToUse = actorId;
-    if (actor.type === 'user') {
-      if (!organizationIdToUse) {
-        organizationIdToUse = actor.properties.organizationId;
-      }
+    try {
+      const actor = useActor();
+      if (actor.type === 'user') {
+        if (!organizationIdToUse) {
+          organizationIdToUse = actor.properties.organizationId;
+        }
 
-      if (!actorIdToUse) {
-        actorIdToUse = actor.properties.userId;
+        if (!actorIdToUse) {
+          actorIdToUse = actor.properties.userId;
+        }
       }
+    } catch (err) {
+      console.log(err);
     }
 
     const res = await ChatsEntity.create({
