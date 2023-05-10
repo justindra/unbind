@@ -1,0 +1,154 @@
+---
+import { Testimonials, Footer } from '@jfsi/react';
+import { Header } from '../components/layouts/header';
+import Base from '../layouts/base.astro';
+import { COMPANY_LOGO, COMPANY_NAME } from '../constants';
+import { HeroDesktopScreenshot } from '../components/layouts/hero-desktop-screenshot';
+
+const featuredTestimonial = {
+  content:
+    "My vet was so happy that I am only coming in for the important stuff. I think he was getting tired of me asking him about my dog's breath.",
+  author: {
+    name: 'Brenna Goyette',
+    handle: 'brennagoyette',
+    avatarUrl:
+      'https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=1024&h=1024&q=80',
+  },
+};
+const testimonials = [
+  [
+    [
+      {
+        content:
+          'My cat finally loves me. The other day she came and sat on my lap for the first time ever. I think it was because of the advice I got from Ruru.',
+        author: {
+          name: 'Leslie Alexander',
+          handle: 'lesliealexander',
+          avatarUrl:
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        },
+      },
+    ],
+    [
+      {
+        content:
+          'If my dog could talk, I think he would say that Ruru is the best thing that has ever happened to him.',
+        author: {
+          name: 'Lindsay Walton',
+          handle: 'lindsaywalton',
+          avatarUrl:
+            'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        },
+      },
+    ],
+  ],
+  [
+    [
+      {
+        content:
+          'I was so happy to find Ruru. I was able to get a quick answer to my question about my dog’s behavior. I would definitely recommend this service to anyone who has a pet.',
+        author: {
+          name: 'Tom Cook',
+          handle: 'tomcook',
+          avatarUrl:
+            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        },
+      },
+    ],
+    [
+      {
+        content:
+          "I don't know what I would do without Ruru. I have a lot of questions about my dog's antics and Ruru has always been there to help me.",
+        author: {
+          name: 'Leonard Krasner',
+          handle: 'leonardkrasner',
+          avatarUrl:
+            'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        },
+      },
+    ],
+  ],
+];
+---
+
+<Base title='Unbind'>
+  <div class='bg-blue-50 dark:bg-slate-950'>
+    <Header />
+    <main>
+      {/* Hero section */}
+      <HeroDesktopScreenshot
+        client:only
+        title='All your data. Unbounded.'
+        description='Unbind is a new way to access your documents and data. Ask questions about your data and get answers in seconds.'
+        cta={{ label: 'Free sign up', href: '/app' }}
+        screenshot={{
+          src: 'MobileScreenshot',
+          alt: 'Mobile screenshot',
+        }}
+        client:only
+      />
+
+      <!-- <FeatureSection
+          title='Your questions. Answered. Fast.'
+          description="Unlike your furry friend, Ruru doesn't need nap time - she's always ready to chat! Plus, she never gets tired of your pet's (or your) shenanigans."
+          features={features}
+        /> -->
+      <!-- <PricingSection
+          title='Simple no-tricks pricing'
+          description='We believe in only charging you for what you use. No contracts, no hidden fees, no surprises. Just simple, straightforward pricing. With no contracts, you only pay for what you use. We charge per block of 10 questions at the rate of $1 per 10 questions. A question is any message that you send to our system.'
+          price={1}
+          includedFeatures={[
+            'First 10 questions are FREE',
+            'Unlimited questions',
+            'Available 24/7',
+          ]}
+          prePrice={'Pay for what you use'}
+          postPrice={'/10 questions'}
+          extraInfo={'Payment through Stripe'}
+          cta={{ href: '/app', label: 'Get started now' }}
+        /> -->
+
+      <Testimonials
+        testimonials={testimonials}
+        featuredTestimonial={featuredTestimonial}
+        title='What people could be saying'
+        colourSplashGradients={{
+          from: 'from-teal-800',
+          to: 'to-teal-500',
+        }}
+        client:only
+      />
+
+      <!-- <CTADarkWithAppScreenshot
+          title={
+            <>
+              Start chatting for free.
+              <br />
+              Ruru can't wait to help!
+            </>
+          }
+          cta={{ label: 'Get started', href: '/app' }}
+          screenshot={{
+            src: DesktopScreenshot,
+            alt: 'App screenshot',
+          }}
+          gradient={{ start: '#29916d', end: '#174e3b' }}
+        /> -->
+    </main>
+    <Footer
+      company={{
+        name: COMPANY_NAME,
+        logoUrl: COMPANY_LOGO,
+      }}
+      navigations={[]}
+      socials={[
+        // { name: 'facebook', href: '#' },
+        // { name: 'instagram', href: '#' },
+        // { name: 'twitter', href: '#' },
+        // { name: 'github', href: '#' },
+        // { name: 'youtube', href: '#' },
+      ]}
+      client:only
+    />
+  </div>
+</Base>
