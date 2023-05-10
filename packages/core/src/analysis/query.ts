@@ -3,7 +3,8 @@ import {
   ConversationalRetrievalQAChain,
   loadQAMapReduceChain,
 } from 'langchain/chains';
-import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
+// import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
+import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Config } from 'sst/node/config';
@@ -11,7 +12,8 @@ import { zod } from '../zod';
 import { z } from 'zod';
 import { zMessage } from '../entities/chats/functions';
 import { CHAT_MESSAGE_ROLE, ChatMessageRole } from '../entities/chats/base';
-import type { Document } from 'langchain/document';
+import { Document } from 'langchain/document';
+import { Documents } from '../entities/documents';
 
 const OPEN_AI_MODEL = 'gpt-4';
 
@@ -92,6 +94,10 @@ export const queryDocument = zod(
     callback,
     timestamp,
   }) => {
+    const { files } = await Documents.getDocumentById({
+      documentId,
+      organizationId,
+    });
     const streamResults = !!callback;
 
     const vectorStore = await getVectorStore({
@@ -102,16 +108,33 @@ export const queryDocument = zod(
 
     const relevantDocs = await vectorStore.similaritySearch(query, 4);
 
-    const llm = new OpenAIChat({
+    const llm = new ChatOpenAI({
       temperature: 0,
       openAIApiKey,
       streaming: streamResults,
       modelName: OPEN_AI_MODEL,
     });
-    const chain = loadQAMapReduceChain(llm);
+
+    const chain = loadQAMapReduceChain(llm, {
+      verbose: true,
+    });
     const res = await chain.call(
       {
-        input_documents: relevantDocs,
+        input_documents: [
+          // If the related files has a summary, we want to add that in as an extra document to start with
+          ...[
+            files
+              .filter((val) => !!val.summary)
+              .map(
+                (file) =>
+                  new Document({
+                    pageContent: file.summary || '',
+                    metadata: { type: 'summary', fileId: file.fileId },
+                  })
+              ),
+          ],
+          ...relevantDocs,
+        ],
         question: query,
       },
       streamResults ? [{ handleLLMNewToken: callback }] : undefined
@@ -171,6 +194,7 @@ export const queryDocumentChat = zod(
         callback,
         timestamp,
       });
+
     const streamResults = !!callback;
 
     const vectorStore = await getVectorStore({
@@ -179,7 +203,7 @@ export const queryDocumentChat = zod(
       documentId,
     });
 
-    const llm = new OpenAIChat({
+    const llm = new ChatOpenAI({
       temperature: 0,
       openAIApiKey,
       streaming: streamResults,
@@ -213,12 +237,17 @@ export const queryDocumentChat = zod(
                 }
               },
               handleLLMStart: (_llm, prompts, runId) => {
+                console.log('prompts', prompts);
                 // Super crude way of finding the last prompt, we can probably
                 // make this a bit better at some point.
-                const isLastPrompt = prompts.find((val) =>
-                  val.startsWith(
-                    'Use the following pieces of context to answer the question at the end.'
-                  )
+                const isLastPrompt = prompts.find(
+                  (val) =>
+                    val.startsWith(
+                      'Use the following pieces of context to answer the question at the end.'
+                    ) ||
+                    val.startsWith(
+                      'Human: Use the following pieces of context to answer the question at the end.'
+                    )
                 );
                 if (isLastPrompt) {
                   actualResultRunId = runId;

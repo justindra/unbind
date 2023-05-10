@@ -59,13 +59,13 @@ export const DocumentItemPage: React.FC = () => {
     documentId,
     query: { documents, files, chats },
   } = useLoaderData() as ReturnType<typeof documentItemPageLoader>;
-  const doc = documents[0];
+  const doc = documents?.[0];
   const { data, refetch } = trpc.get_document_by_id.useQuery(
     { documentId },
     { enabled: false }
   );
 
-  const documentToUse = data?.documents[0] || doc;
+  const documentToUse = data?.documents?.[0] || doc;
 
   // Keep refetching until the document is no longer processing
   useInterval(

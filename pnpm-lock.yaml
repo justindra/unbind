@@ -196,8 +196,8 @@ importers:
         specifier: ^2.5.1
         version: 2.5.1(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/smithy-client@3.325.0)(@aws-sdk/types@3.310.0)
       langchain:
-        specifier: ^0.0.64
-        version: 0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
+        specifier: ^0.0.74
+        version: 0.0.74(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
       luxon:
         specifier: ^3.3.0
         version: 3.3.0
@@ -239,8 +239,8 @@ importers:
         specifier: ^10.21.1
         version: 10.21.1
       langchain:
-        specifier: ^0.0.64
-        version: 0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
+        specifier: ^0.0.74
+        version: 0.0.74(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1)
       pdf-parse:
         specifier: ^1.1.1
         version: 1.1.1
@@ -3064,8 +3064,8 @@ packages:
   /@balena/dockerignore@1.0.2:
     resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
 
-  /@dqbd/tiktoken@1.0.6:
-    resolution: {integrity: sha512-umSdeZTy/SbPPKVuZKV/XKyFPmXSN145CcM3iHjBbmhlohBJg7vaDp4cPCW+xNlWL6L2U1sp7T2BD+di2sUKdA==}
+  /@dqbd/tiktoken@1.0.7:
+    resolution: {integrity: sha512-bhR5k5W+8GLzysjk8zTMVygQZsgvf7W1F0IlL4ZQ5ugjo5rCyiwGM5d8DYriXspytfu98tv59niang3/T+FoDw==}
     dev: false
 
   /@emmetio/abbreviation@2.3.2:
@@ -4305,7 +4305,6 @@ packages:
   /ansi-styles@5.2.0:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
     engines: {node: '>=10'}
-    dev: true
 
   /ansi-styles@6.2.1:
     resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
@@ -6837,17 +6836,22 @@ packages:
     resolution: {integrity: sha512-TH+b56pVXQq0tsyooYLeNfV11j6ih7D50dyN8tkM0e7ndiUH28Nziojiog3qRFlmEj9XePYdZUrNJ2079Qjdow==}
     engines: {node: '>=14.0.0'}
 
-  /langchain@0.0.64(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1):
-    resolution: {integrity: sha512-EPR5igtuSemtPAesQ8oa8SF/xjTA+bYJW00JNJ/8PYkPNiU+uc+cifOEH3H/DFam+oDY9XhR7WV+GhBEskVNNA==}
+  /langchain@0.0.74(@aws-sdk/client-dynamodb@3.319.0)(@aws-sdk/client-s3@3.317.0)(@pinecone-database/pinecone@0.0.14)(pdf-parse@1.1.1):
+    resolution: {integrity: sha512-xQZGin2ovuh3tjjEkKeP4ZrOpSNP8EllMpPVMjkV/qKEMEASlVwWD1kuO7oKkpvZcSciFy3eFTBUgEFpt2DJ9w==}
     engines: {node: '>=18'}
     peerDependencies:
+      '@aws-sdk/client-dynamodb': ^3.310.0
       '@aws-sdk/client-lambda': ^3.310.0
       '@aws-sdk/client-s3': ^3.310.0
+      '@clickhouse/client': ^0.0.14
       '@getmetal/metal-sdk': '*'
       '@huggingface/inference': ^1.5.1
       '@opensearch-project/opensearch': '*'
       '@pinecone-database/pinecone': '*'
       '@supabase/supabase-js': ^2.10.0
+      '@tensorflow-models/universal-sentence-encoder': '*'
+      '@tensorflow/tfjs-converter': '*'
+      '@tensorflow/tfjs-core': '*'
       '@zilliz/milvus2-sdk-node': ^2.2.0
       axios: '*'
       cheerio: ^1.0.0-rc.12
@@ -6868,9 +6872,13 @@ packages:
       typeorm: ^0.3.12
       weaviate-ts-client: ^1.0.0
     peerDependenciesMeta:
+      '@aws-sdk/client-dynamodb':
+        optional: true
       '@aws-sdk/client-lambda':
         optional: true
       '@aws-sdk/client-s3':
+        optional: true
+      '@clickhouse/client':
         optional: true
       '@getmetal/metal-sdk':
         optional: true
@@ -6881,6 +6889,12 @@ packages:
       '@pinecone-database/pinecone':
         optional: true
       '@supabase/supabase-js':
+        optional: true
+      '@tensorflow-models/universal-sentence-encoder':
+        optional: true
+      '@tensorflow/tfjs-converter':
+        optional: true
+      '@tensorflow/tfjs-core':
         optional: true
       '@zilliz/milvus2-sdk-node':
         optional: true
@@ -6922,9 +6936,11 @@ packages:
         optional: true
     dependencies:
       '@anthropic-ai/sdk': 0.4.3
+      '@aws-sdk/client-dynamodb': 3.319.0
       '@aws-sdk/client-s3': 3.317.0(@aws-sdk/signature-v4-crt@3.310.0)
-      '@dqbd/tiktoken': 1.0.6
+      '@dqbd/tiktoken': 1.0.7
       '@pinecone-database/pinecone': 0.0.14
+      ansi-styles: 5.2.0
       binary-extensions: 2.2.0
       browser-or-node: 2.1.1
       expr-eval: 2.0.2

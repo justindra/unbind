@@ -1,11 +1,11 @@
-import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { PDFLoader } from 'langchain/document_loaders';
+import { loadSummarizationChain } from 'langchain/chains';
+import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
+import { OpenAI } from 'langchain/llms/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Config } from 'sst/node/config';
-import streamToBlob from 'stream-to-blob';
 
 const pcClient = new PineconeClient();
 
@@ -14,33 +14,32 @@ type FileDetails = {
   documentId: string;
   fileId: string;
   openAIApiKey: string;
+  filename: string;
 };
 
 /**
  * Load the vector embeddings from a file and store them in Pinecone so that
  * it can be used to search for similar documents.
  */
-export async function loadEmbeddingsFromS3Object(
-  s3Object: GetObjectCommandOutput,
-  { organizationId, documentId, fileId, openAIApiKey }: FileDetails
+export async function loadEmbeddingsFromDocuments(
+  documents: Document[],
+  { organizationId, documentId, fileId, openAIApiKey, filename }: FileDetails
 ) {
-  const file = await streamToBlob(s3Object.Body, s3Object.ContentType);
-  const loader = new PDFLoader(file);
-
-  const data = await loader.load();
-  const pageCount = data.length;
+  const pageCount = documents.length;
 
   const textSplitter = new RecursiveCharacterTextSplitter({});
 
-  const texts = (await textSplitter.splitDocuments(data)).map((text, i) => ({
-    ...text,
-    metadata: {
-      ...text.metadata,
-      fileId,
-      documentId,
-      filename: s3Object.Metadata?.fileName,
-    },
-  }));
+  const texts = (await textSplitter.splitDocuments(documents)).map(
+    (text, i) => ({
+      ...text,
+      metadata: {
+        ...text.metadata,
+        fileId,
+        documentId,
+        filename,
+      },
+    })
+  );
 
   const embeddings = new OpenAIEmbeddings({ openAIApiKey });
 

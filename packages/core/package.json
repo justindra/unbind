@@ -19,7 +19,7 @@
     "@pinecone-database/pinecone": "^0.0.14",
     "@trpc/server": "^10.21.1",
     "electrodb": "^2.5.1",
-    "langchain": "^0.0.64",
+    "langchain": "^0.0.74",
     "luxon": "^3.3.0",
     "pdf-parse": "^1.1.1",
     "stream-to-blob": "^2.0.1",

@@ -1,5 +1,9 @@
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { loadEmbeddingsFromS3Object } from '@unbind/core/analysis';
+import {
+  generateSummary,
+  loadDocumentFromS3Object,
+  loadEmbeddingsFromDocuments,
+} from '@unbind/core/analysis';
 import {
   getFile,
   getMetadataFromS3Key,
@@ -76,16 +80,22 @@ export const handler: S3Handler = async (event) => {
           );
         }
 
+        const docs = await loadDocumentFromS3Object(s3Object);
+
         const res = await Promise.all([
           // Analyze the file and save embeddings to Pinecone
-          loadEmbeddingsFromS3Object(s3Object, {
+          loadEmbeddingsFromDocuments(docs, {
             organizationId,
             documentId,
             fileId,
             openAIApiKey,
+            filename: s3Object.Metadata?.fileName || '',
           }),
           // TODO: Analyze the file to have a summary of the file
+          // generateSummary(docs, openAIApiKey),
         ]);
+
+        // console.log(res[1]);
 
         // Update the file in DDB with all the new details that we have analyzed
         await updateFileAfterProcessing({
@@ -94,6 +104,7 @@ export const handler: S3Handler = async (event) => {
           fileId,
           pageCount: res[0].pageCount,
           size: s3Object.ContentLength || 0,
+          // summary: res[1],
           summary: '',
         });
       } catch (error) {
