@@ -9,6 +9,7 @@ import { kmeans } from 'ml-kmeans';
 // Average number of characters per chapter in a book is 15000 to 20000 characters
 const MAX_CHARACTERS_PER_SUMMARY = 20000;
 
+// Maximum number of clusters to use for clustering
 const MAX_CLUSTERS = 10;
 
 /**
@@ -53,10 +54,14 @@ export async function generateSummary(
 
     return summary.text;
   }
+
   // Otherwise, we need to do some clustering to find the most relevant documents
   // before we can summarize them. This is because the summarization chain is
   // very slow and expensive to run, so we want to minimize the number of times
   // we run it.
+
+  // Here we use the Best Vector Representation method from Greg (Data Independent)
+  // https://youtu.be/qaPMdcCqtWk
 
   // Use k-means clustering to cluster the documents into the number of clusters
   const kmeansRes = kmeans(vectors, numberOfClusters, {
@@ -90,7 +95,6 @@ export async function generateSummary(
 
   // Sort the indices so that we can get the documents in order
   const sortedIndices = closestIndices.sort((a, b) => a - b);
-  console.log(sortedIndices);
 
   const selectedDocs = sortedIndices.map((index) => docs[index]);
 
@@ -117,7 +121,7 @@ export async function generateSummary(
 
     summaryList.push(summary.text);
 
-    console.log(`Summary ${i} (chunk ${sortedIndices[i]}): ${summary.text}`);
+    // console.log(`Summary ${i} (chunk ${sortedIndices[i]}): ${summary.text}`);
   }
 
   // Now we want to summarize the summaries
@@ -145,9 +149,9 @@ export async function generateSummary(
       input_documents: summaryDocs,
     });
 
-    console.log(`Final Summary:
+    //   console.log(`Final Summary:
 
-  ${final.text}`);
+    // ${final.text}`);
   } catch (error) {
     if ((error as any).isAxiosError) {
       console.log((error as any).response.data);

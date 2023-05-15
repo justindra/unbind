@@ -3,17 +3,16 @@ import {
   ConversationalRetrievalQAChain,
   loadQAMapReduceChain,
 } from 'langchain/chains';
-// import { OpenAI, OpenAIChat } from 'langchain/llms/openai';
 import { ChatOpenAI } from 'langchain/chat_models/openai';
+import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Config } from 'sst/node/config';
-import { zod } from '../zod';
 import { z } from 'zod';
-import { zMessage } from '../entities/chats/functions';
 import { CHAT_MESSAGE_ROLE, ChatMessageRole } from '../entities/chats/base';
-import { Document } from 'langchain/document';
+import { zMessage } from '../entities/chats/functions';
 import { Documents } from '../entities/documents';
+import { zod } from '../zod';
 
 const OPEN_AI_MODEL = 'gpt-4';
 

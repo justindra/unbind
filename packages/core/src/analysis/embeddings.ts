@@ -1,8 +1,6 @@
 import { PineconeClient } from '@pinecone-database/pinecone';
-import { loadSummarizationChain } from 'langchain/chains';
 import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { OpenAI } from 'langchain/llms/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
 import { Config } from 'sst/node/config';
@@ -17,42 +15,52 @@ type FileDetails = {
   filename: string;
 };
 
-/**
- * Load the vector embeddings from a file and store them in Pinecone so that
- * it can be used to search for similar documents.
- */
-export async function loadEmbeddingsFromDocuments(
+export async function generateEmbeddingsAndDocuments(
   documents: Document[],
-  { organizationId, documentId, fileId, openAIApiKey, filename }: FileDetails
+  { fileId, documentId, filename, openAIApiKey }: FileDetails
 ) {
   const pageCount = documents.length;
-
-  const textSplitter = new RecursiveCharacterTextSplitter({});
+  const textSplitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 2000,
+  });
 
   const texts = (await textSplitter.splitDocuments(documents)).map(
-    (text, i) => ({
-      ...text,
-      metadata: {
-        ...text.metadata,
-        fileId,
-        documentId,
-        filename,
-      },
-    })
+    (text) =>
+      ({
+        ...text,
+        metadata: {
+          ...text.metadata,
+          fileId,
+          documentId,
+          filename,
+        },
+      } as Document)
   );
-
   const embeddings = new OpenAIEmbeddings({ openAIApiKey });
 
+  const vectors = await embeddings.embedDocuments(
+    texts.map((t) => t.pageContent)
+  );
+
+  return { embeddings, vectors, documents: texts, pageCount };
+}
+
+export async function saveEmbeddings(
+  embeddings: OpenAIEmbeddings,
+  vectors: number[][],
+  documents: Document[],
+  { organizationId }: Pick<FileDetails, 'organizationId'>
+) {
   await pcClient.init({
     apiKey: Config.PINECONE_API_KEY,
     environment: Config.PINECONE_ENV,
   });
   const pineconeIndex = pcClient.Index(Config.PINECONE_INDEX);
 
-  await PineconeStore.fromDocuments(texts, embeddings, {
+  const store = new PineconeStore(embeddings, {
     pineconeIndex,
     namespace: organizationId,
   });
 
-  return { pageCount };
+  await store.addVectors(vectors, documents);
 }

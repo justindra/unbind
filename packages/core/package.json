@@ -21,6 +21,7 @@
     "electrodb": "^2.5.1",
     "langchain": "^0.0.74",
     "luxon": "^3.3.0",
+    "ml-kmeans": "^6.0.0",
     "pdf-parse": "^1.1.1",
     "stream-to-blob": "^2.0.1",
     "zod": "^3.21.4"
