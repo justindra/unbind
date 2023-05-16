@@ -1,6 +1,7 @@
 import { Config, StackContext, use } from 'sst/constructs';
 import { Auth } from 'sst/constructs/future';
 import { DataStack } from './data';
+import { DomainUtils, HOSTED_ZONE } from './constants';
 
 export function AuthStack({ app, stack }: StackContext) {
   const { table } = use(DataStack);
@@ -22,10 +23,10 @@ export function AuthStack({ app, stack }: StackContext) {
         // facebook.FACEBOOK_APP_SECRET,
       ],
     },
-    // customDomain: {
-    //   domainName: DomainUtils.getWebDomain(app, 'auth'),
-    //   hostedZone: HOSTED_ZONE,
-    // },
+    customDomain: {
+      domainName: DomainUtils.getWebDomain(app, 'auth'),
+      hostedZone: HOSTED_ZONE,
+    },
   });
 
   stack.addOutputs({ AuthEndpoint: auth.url });

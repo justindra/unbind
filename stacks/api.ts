@@ -1,6 +1,7 @@
 import { StackContext, Api, use, WebSocketApi } from 'sst/constructs';
 import { DataStack } from './data';
 import { AuthStack } from './auth';
+import { DomainUtils, HOSTED_ZONE } from './constants';
 
 export function APIStack({ app, stack }: StackContext) {
   const { table, filesBucket, eventBus, pinecone } = use(DataStack);
@@ -8,6 +9,10 @@ export function APIStack({ app, stack }: StackContext) {
 
   // TRPC API
   const api = new Api(stack, 'api', {
+    customDomain: {
+      domainName: DomainUtils.getApiDomain(app),
+      hostedZone: HOSTED_ZONE,
+    },
     defaults: {
       function: {
         bind: [table, auth, filesBucket, eventBus],
@@ -35,10 +40,10 @@ export function APIStack({ app, stack }: StackContext) {
         bind: [table, auth, eventBus],
       },
     },
-    // customDomain: {
-    //   path: 'chat',
-    //   cdk: { domainName: api.cdk.domainName },
-    // },
+    customDomain: {
+      domainName: DomainUtils.getWebDomain(app, 'ws'),
+      hostedZone: HOSTED_ZONE,
+    },
     routes: {
       $connect: 'packages/functions/src/websocket/connect.handler',
       $disconnect: 'packages/functions/src/websocket/disconnect.handler',

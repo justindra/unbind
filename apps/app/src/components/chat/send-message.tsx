@@ -1,8 +1,8 @@
 import {
-  BarsArrowUpIcon,
+  // BarsArrowUpIcon,
   PaperAirplaneIcon,
-  QuestionMarkCircleIcon,
-  TrashIcon,
+  // QuestionMarkCircleIcon,
+  // TrashIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@jfsi/react';
 import { useForm } from 'react-hook-form';
@@ -19,7 +19,7 @@ type SendMessageProps = {
 
 export const SendMessage: React.FC<SendMessageProps> = ({
   onSendMessage,
-  onActions,
+  // onActions,
   loading = false,
 }) => {
   const { handleSubmit, register, resetField } = useForm<Inputs>();
@@ -30,9 +30,9 @@ export const SendMessage: React.FC<SendMessageProps> = ({
     resetField('message');
   });
 
-  const handleAction = (action: string) => {
-    if (onActions) onActions(action);
-  };
+  // const handleAction = (action: string) => {
+  //   if (onActions) onActions(action);
+  // };
   return (
     <div className='p-4'>
       <div className='min-w-0 flex-1 relative'>

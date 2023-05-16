@@ -7,6 +7,7 @@ import { AuthStack } from './stacks/auth';
 export default {
   config(_input) {
     return {
+      profile: 'unbind',
       name: 'unbind',
       region: 'us-west-2',
     };
