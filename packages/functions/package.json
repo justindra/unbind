@@ -9,7 +9,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.114",
     "@types/node": "^18.15.13",
-    "sst": "2.7.2"
+    "sst": "2.8.22"
   },
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "^3.327.0",

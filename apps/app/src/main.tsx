@@ -19,6 +19,7 @@ import {
 import {
   AUTH_ENDPOINT,
   AUTH_URL,
+  COMPANY_LOGO_LONG,
   COMPANY_NAME,
   REDIRECT_URL,
 } from './constants';
@@ -53,11 +54,11 @@ const router = createBrowserRouter([
     path: '/auth/sign-in',
     element: (
       <AuthSignInPage
-        logo={'COMPANY_LOGO_LONG'}
+        logo={COMPANY_LOGO_LONG}
         logoAlt={`${COMPANY_NAME} Logo`}
         authUrl={AUTH_URL}
         redirectUrl={REDIRECT_URL}
-        providers={['google', 'facebook']}
+        providers={['google']}
       />
     ),
   },

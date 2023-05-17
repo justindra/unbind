@@ -1,5 +1,6 @@
 import { generateDefaultTableOptions } from 'jfsi/constructs';
 import { Bucket, Config, EventBus, StackContext, Table } from 'sst/constructs';
+import { DomainUtils } from './constants';
 
 export function DataStack({ app, stack }: StackContext) {
   // The DDB table that stores all the data
@@ -8,10 +9,11 @@ export function DataStack({ app, stack }: StackContext) {
   const filesBucket = new Bucket(stack, 'files', {
     cors: [
       // Allow to upload file from the frontend
-      // TODO: set the origin to not be 'localhost'
       {
         allowedMethods: ['PUT'],
-        allowedOrigins: ['http://localhost:5173'],
+        allowedOrigins: app.local
+          ? ['http://localhost:5173']
+          : [DomainUtils.getWebUrl(app, 'app')],
         allowedHeaders: ['*'],
       },
     ],

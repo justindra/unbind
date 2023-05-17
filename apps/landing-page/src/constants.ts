@@ -11,3 +11,4 @@ export const AUTH_URL = import.meta.env.VITE_AUTH_ENDPOINT + '/authorize';
 export const REDIRECT_URL = `${
   import.meta.env.VITE_APP_ENDPOINT || 'http://localhost:5173'
 }/auth/callback`;
+export const APP_ENDPOINT = import.meta.env.VITE_APP_ENDPOINT;
