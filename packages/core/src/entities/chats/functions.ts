@@ -91,12 +91,15 @@ export const sendMessage = zod(
     ).go({ response: 'all_new' });
 
     // Push the event to a bus to be processed by a worker
-    await publishEvent('chats.awaiting', {
-      organizationId: chat.organizationId,
-      documentId: chat.documentId,
-      chatId: chat.chatId || chatId,
-      userId: actorId,
-    });
+    await publishEvent(
+      'chats.awaiting' as never,
+      {
+        organizationId: chat.organizationId,
+        documentId: chat.documentId,
+        chatId: chat.chatId || chatId,
+        userId: actorId,
+      } as never
+    );
 
     return res.data;
   }
