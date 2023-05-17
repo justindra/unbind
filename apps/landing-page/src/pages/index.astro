@@ -2,7 +2,7 @@
 import { Testimonials, Footer } from '@jfsi/react';
 import { Header } from '../components/layouts/header';
 import Base from '../layouts/base.astro';
-import { COMPANY_LOGO, COMPANY_NAME } from '../constants';
+import { APP_ENDPOINT, COMPANY_LOGO, COMPANY_NAME } from '../constants';
 import { HeroDesktopScreenshot } from '../components/layouts/hero-desktop-screenshot';
 
 const featuredTestimonial = {
@@ -80,7 +80,7 @@ const testimonials = [
         client:only
         title='All your data. Unbounded.'
         description="Unbind, the innovative question-answering platform that empowers you to unlock the knowledge within your documents. Whether you're a student, professional, or researcher, Unbind enables you to ask questions about your documents and receive accurate answers instantly."
-        cta={{ label: 'Free sign up', href: '/app' }}
+        cta={{ label: 'Free sign up', href: APP_ENDPOINT }}
         screenshot={{
           src: 'MobileScreenshot',
           alt: 'Desktop screenshot',
@@ -108,7 +108,7 @@ const testimonials = [
           cta={{ href: '/app', label: 'Get started now' }}
         /> -->
 
-      <Testimonials
+      <!-- <Testimonials
         testimonials={testimonials}
         featuredTestimonial={featuredTestimonial}
         title='What people could be saying'
@@ -117,7 +117,7 @@ const testimonials = [
           to: 'to-teal-500',
         }}
         client:only
-      />
+      /> -->
 
       <!-- <CTADarkWithAppScreenshot
           title={

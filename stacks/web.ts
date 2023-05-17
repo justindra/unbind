@@ -33,9 +33,8 @@ export function WebStack({ app, stack }: StackContext) {
     environment: {
       VITE_API_ENDPOINT: api.customDomainUrl || api.url,
       VITE_AUTH_ENDPOINT: auth.url,
-      VITE_APP_ENDPOINT: isProduction(app.stage)
-        ? DomainUtils.getWebUrl(app)
-        : 'http://localhost:5173',
+      VITE_APP_ENDPOINT:
+        appSite.customDomainUrl || appSite.url || 'http://localhost:5173',
     },
     customDomain: {
       domainName: DomainUtils.getWebDomain(app),

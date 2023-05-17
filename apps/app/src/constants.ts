@@ -1,9 +1,9 @@
-// import RuruLongLogo from './assets/ruru-long-logo.png';
+import LongLogo from './assets/unbind-long.png';
 // import RuruLogo from './assets/ruru-logo.png';
 
 export const COMPANY_NAME = 'Unbind';
 // export const COMPANY_LOGO = RuruLogo;
-// export const COMPANY_LOGO_LONG = RuruLongLogo;
+export const COMPANY_LOGO_LONG = LongLogo;
 
 // Auth constants
 export const AUTH_ENDPOINT = import.meta.env.VITE_AUTH_ENDPOINT;

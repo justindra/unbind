@@ -7,11 +7,11 @@ export function AuthStack({ app, stack }: StackContext) {
   const { table } = use(DataStack);
 
   const google = Config.Secret.create(stack, 'GOOGLE_CLIENT_ID');
-  //   const facebook = Config.Secret.create(
-  //     stack,
-  //     'FACEBOOK_APP_ID',
-  //     'FACEBOOK_APP_SECRET'
-  //   );
+  // const facebook = Config.Secret.create(
+  //   stack,
+  //   'FACEBOOK_APP_ID',
+  //   'FACEBOOK_APP_SECRET'
+  // );
 
   const auth = new Auth(stack, 'auth', {
     authenticator: {

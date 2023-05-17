@@ -1,10 +1,10 @@
 import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import React, { useState } from 'react';
-import { COMPANY_LOGO, COMPANY_NAME } from '../../constants';
+import { APP_ENDPOINT, COMPANY_LOGO, COMPANY_NAME } from '../../constants';
 
 const navigation: { name: string; href: string }[] = [];
-const SIGN_IN_URL = '/auth/sign-in';
+const SIGN_IN_URL = APP_ENDPOINT;
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
