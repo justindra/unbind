@@ -134,7 +134,7 @@ export const handler = AuthHandler({
         name: userInDB.fullName || userInDB.firstName,
         avatarUrl: userInDB.avatarUrl,
       },
-    } as any;
+    };
   },
   // This callback needs some work, not spec compliant currently
   async onError() {
