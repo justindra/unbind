@@ -31,8 +31,10 @@ export const t = initTRPC.create();
 
 export const router = t.router({
   user_by_id: query(Users.getUserById),
-  set_open_ai_key: mutation(Organizations.setOpenAIKey),
-  get_open_ai_key: query(Organizations.getOpenAIKey),
+  set_api_keys: mutation(Organizations.setApiKeys),
+  get_api_keys: query(Organizations.getApiKeys),
+  // set_open_ai_key: mutation(Organizations.setOpenAIKey),
+  // get_open_ai_key: query(Organizations.getOpenAIKey),
   create_document: mutation(Documents.createDocument),
   get_upload_url: mutation(Documents.getUploadUrl),
   get_document_by_id: query(Documents.getDocumentById),

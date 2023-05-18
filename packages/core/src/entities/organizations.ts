@@ -16,6 +16,12 @@ const OrgBase = generateOrganizationEntityDetails(
       attributes: {
         /** OpenAI's API Key to use for the organization */
         openAIApiKey: { type: 'string' },
+        /** Pinecone's API Key */
+        pineconeApiKey: { type: 'string' },
+        /** Pinecone's Environment */
+        pineconeEnvironment: { type: 'string' },
+        /** Pinecone's Index */
+        pineconeIndex: { type: 'string' },
       },
       indexes: {
         test: {
@@ -31,33 +37,107 @@ const OrgBase = generateOrganizationEntityDetails(
 
 export type Info = EntityItem<typeof OrgBase.OrganizationEntity>;
 
+// /**
+//  * Set the OpenAI API Key to use for the active organization
+//  * @param apiKey The key to set
+//  * @returns
+//  */
+// export const setOpenAIKey = zod(
+//   z
+//     .string()
+//     .startsWith('sk-', 'This does not look like an OpenAI API Key')
+//     .min(50, 'This does not look like an OpenAI API Key'),
+//   async (apiKey: string) => {
+//     const actor = assertActor('user');
+
+//     const res = await OrgBase.OrganizationEntity.update({
+//       organizationId: actor.properties.organizationId,
+//     })
+//       .set({ openAIApiKey: apiKey })
+//       .go({ response: 'updated_new' });
+
+//     return res.data.openAIApiKey;
+//   }
+// );
+
+// /**
+//  * Get the OpenAI Key for the active organization
+//  */
+// export const getOpenAIKey = zod(
+//   /** Organization Id to use */
+//   z.string().optional(),
+//   async (organizationId) => {
+//     const organizationIdToUse =
+//       organizationId ?? assertActor('user').properties.organizationId;
+
+//     const res = await OrgBase.OrganizationEntity.get({
+//       organizationId: organizationIdToUse,
+//     }).go();
+
+//     return res.data?.openAIApiKey;
+//   }
+// );
+
+function removeUndefinedKeys(
+  keys: Record<string, unknown>
+): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(keys).filter(([_, value]) => value !== undefined)
+  );
+}
+
 /**
- * Set the OpenAI API Key to use for the active organization
- * @param apiKey The key to set
- * @returns
+ * Turn all the keys to just be a boolean true or false to specify whether or
+ * not it has been set.
  */
-export const setOpenAIKey = zod(
-  z
-    .string()
-    .startsWith('sk-', 'This does not look like an OpenAI API Key')
-    .min(50, 'This does not look like an OpenAI API Key'),
-  async (apiKey: string) => {
+function keysToBoolean(keys: Record<string, unknown>): Record<string, boolean> {
+  return Object.fromEntries(
+    Object.entries(keys).map(([key, value]) => [key, Boolean(value)])
+  );
+}
+
+/**
+ * Set all the API Keys for the current user's organization
+ */
+export const setApiKeys = zod(
+  z.object({
+    openAIApiKey: z
+      .string()
+      .startsWith('sk-', 'This does not look like an OpenAI API Key')
+      .min(50, 'This does not look like an OpenAI API Key'),
+    pineconeApiKey: z.string().optional(),
+    pineconeEnvironment: z.string().optional(),
+    pineconeIndex: z.string().optional(),
+  }),
+  async ({
+    openAIApiKey,
+    pineconeApiKey,
+    pineconeEnvironment,
+    pineconeIndex,
+  }) => {
     const actor = assertActor('user');
 
     const res = await OrgBase.OrganizationEntity.update({
       organizationId: actor.properties.organizationId,
     })
-      .set({ openAIApiKey: apiKey })
+      .set(
+        removeUndefinedKeys({
+          openAIApiKey,
+          pineconeApiKey,
+          pineconeEnvironment,
+          pineconeIndex,
+        })
+      )
       .go({ response: 'updated_new' });
 
-    return res.data.openAIApiKey;
+    return keysToBoolean(res.data);
   }
 );
 
 /**
- * Get the OpenAI Key for the active organization
+ * Get the API Keys for the active organization
  */
-export const getOpenAIKey = zod(
+export const getApiKeys = zod(
   /** Organization Id to use */
   z.string().optional(),
   async (organizationId) => {
@@ -68,12 +148,19 @@ export const getOpenAIKey = zod(
       organizationId: organizationIdToUse,
     }).go();
 
-    return res.data?.openAIApiKey;
+    return keysToBoolean({
+      openAIApiKey: res.data?.openAIApiKey,
+      pineconeApiKey: res.data?.pineconeApiKey,
+      pineconeEnvironment: res.data?.pineconeEnvironment,
+      pineconeIndex: res.data?.pineconeIndex,
+    });
   }
 );
 
 export const Organizations = {
   ...OrgBase,
-  setOpenAIKey,
-  getOpenAIKey,
+  // setOpenAIKey,
+  // getOpenAIKey,
+  setApiKeys,
+  getApiKeys,
 };

@@ -5,20 +5,24 @@ import React, { useEffect } from 'react';
 import { Outlet, redirect, useLoaderData } from 'react-router-dom';
 import { COMPANY_LOGO_LONG, COMPANY_NAME } from '../constants';
 import { queryClient, trpc, trpcClient } from '../utils/trpc';
-import { SetOpenAIKeyModal } from '../components/set-open-ai-key-modal';
+import { SetAPIKeysModal } from '../components/set-api-keys-modal';
+
+function hasFalseValue(obj?: Record<string, boolean>) {
+  if (!obj) return true;
+  return Object.values(obj).some((value) => value === false);
+}
 
 const OpenAIApiKeyModal = () => {
-  const { isLoading, data, refetch } = trpc.get_open_ai_key.useQuery(
-    undefined,
-    { enabled: false }
-  );
+  const { isLoading, data, refetch } = trpc.get_api_keys.useQuery(undefined, {
+    enabled: false,
+  });
   // Refetch once on mount
   useEffect(() => {
     refetch();
   }, []);
-  if (isLoading || !!data) return null;
+  if (isLoading || !hasFalseValue(data)) return null;
 
-  return <SetOpenAIKeyModal />;
+  return <SetAPIKeysModal />;
 };
 
 export const AppRoot: React.FC = () => {

@@ -21,25 +21,11 @@ export function DataStack({ app, stack }: StackContext) {
 
   const eventBus = new EventBus(stack, 'event-bus', {});
 
-  const pinecone = Config.Secret.create(
-    stack,
-    'PINECONE_API_KEY',
-    'PINECONE_ENV',
-    'PINECONE_INDEX'
-  );
-
   filesBucket.addNotifications(stack, {
     fileUploaded: {
       function: {
         handler: 'packages/functions/src/file-uploaded.handler',
-        bind: [
-          table,
-          filesBucket,
-          pinecone.PINECONE_API_KEY,
-          pinecone.PINECONE_ENV,
-          pinecone.PINECONE_INDEX,
-          eventBus,
-        ],
+        bind: [table, filesBucket, eventBus],
       },
       events: ['object_created'],
     },

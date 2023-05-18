@@ -46,16 +46,26 @@ const getVectorStore = zod(
     openAIApiKey: z.string(),
     organizationId: z.string(),
     documentId: z.string(),
+    pineconeApiKey: z.string(),
+    pineconeEnvironment: z.string(),
+    pineconeIndex: z.string(),
   }),
-  async ({ openAIApiKey, organizationId, documentId }) => {
+  async ({
+    openAIApiKey,
+    organizationId,
+    documentId,
+    pineconeApiKey,
+    pineconeEnvironment,
+    pineconeIndex,
+  }) => {
     const embeddings = new OpenAIEmbeddings({ openAIApiKey });
 
     const client = new PineconeClient();
     await client.init({
-      apiKey: Config.PINECONE_API_KEY,
-      environment: Config.PINECONE_ENV,
+      apiKey: pineconeApiKey,
+      environment: pineconeEnvironment,
     });
-    const pineconeIndex = client.Index(Config.PINECONE_INDEX);
+    const pineconeIndex = client.Index(pineconeIndex);
 
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
       pineconeIndex,
