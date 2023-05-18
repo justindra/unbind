@@ -3,6 +3,7 @@ import {
   Info as OrganizationInfo,
 } from '@unbind/core/entities/organizations';
 import { Users, Info } from '@unbind/core/entities/users';
+import fetch, { Headers } from 'node-fetch';
 import { Config } from 'sst/node/config';
 import {
   AuthHandler,
@@ -55,15 +56,10 @@ export const handler = AuthHandler({
     let userInDB: Info;
     let orgInDB: OrganizationInfo;
 
-    console.log(input);
-
     // Go through the different providers and workout the params
-    if (input.provider === 'google' || input.provider === 'github') {
+    if (input.provider === 'google') {
       const { sub, email, name, picture, given_name, family_name } =
         input.tokenset.claims();
-
-      // TODO: Test to make sure github actually works
-      console.log(input.tokenset.claims());
 
       // Create the user through the Auth Provider, this should always return
       // a user. If the user already exists, it will return the existing user.
@@ -75,6 +71,33 @@ export const handler = AuthHandler({
         email: email || '',
         avatarUrl: picture,
       };
+    } else if (input.provider === 'github') {
+      // Set the access token into the header
+      const headers = new Headers({
+        Authorization: `Bearer ${input.tokenset.access_token}`,
+      });
+
+      // Go get the user details from Github
+      const res = await fetch('https://api.github.com/user', {
+        method: 'GET',
+        headers,
+      });
+
+      const body = (await res.json()) as {
+        id: number;
+        name: string;
+        email: string | null;
+        avatar_url: string | null;
+      };
+
+      userInDBParams = {
+        authProvider: input.provider,
+        authProviderId: body.id.toString(),
+        firstName: body.name?.split(' ')[0] || '',
+        lastName: body.name?.split(' ')[1] || '',
+        email: body.email || '',
+        avatarUrl: body.avatar_url || '',
+      };
     }
 
     if (!userInDBParams) {
@@ -84,32 +107,32 @@ export const handler = AuthHandler({
     }
 
     const session = useSession();
-    // if (session.type === 'public') {
-    //   // There is no current user that has been logged in, so we need to create
-    //   // a new user.
-    //   const res = await Organizations.createUserAndOrganization(userInDBParams);
-    //   userInDB = res.user;
-    //   orgInDB = res.organization;
-    // } else {
-    //   // There is a current user that has been logged in, so we just need to
-    //   // update or create this user's token and provider instead of creating a
-    //   // new user.
-    //   const res = await Organizations.addAuthProviderToUser({
-    //     ...userInDBParams,
-    //     userId: session.properties.userId,
-    //   });
+    if (session.type === 'public') {
+      // There is no current user that has been logged in, so we need to create
+      // a new user.
+      const res = await Organizations.createUserAndOrganization(userInDBParams);
+      userInDB = res.user;
+      orgInDB = res.organization;
+    } else {
+      // There is a current user that has been logged in, so we just need to
+      // update or create this user's token and provider instead of creating a
+      // new user.
+      const res = await Organizations.addAuthProviderToUser({
+        ...userInDBParams,
+        userId: session.properties.userId,
+      });
 
-    //   userInDB = res.user;
-    //   orgInDB = res.organizations[0];
-    // }
+      userInDB = res.user;
+      orgInDB = res.organizations[0];
+    }
 
     return {
       type: 'user',
       properties: {
-        // userId: userInDB.userId,
-        // organizationId: orgInDB.organizationId,
-        // name: userInDB.fullName || userInDB.firstName,
-        // avatarUrl: userInDB.avatarUrl,
+        userId: userInDB.userId,
+        organizationId: orgInDB.organizationId,
+        name: userInDB.fullName || userInDB.firstName,
+        avatarUrl: userInDB.avatarUrl,
       },
     } as any;
   },
