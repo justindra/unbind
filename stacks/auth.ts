@@ -7,6 +7,11 @@ export function AuthStack({ app, stack }: StackContext) {
   const { table } = use(DataStack);
 
   const google = Config.Secret.create(stack, 'GOOGLE_CLIENT_ID');
+  const github = Config.Secret.create(
+    stack,
+    'GITHUB_CLIENT_ID',
+    'GITHUB_CLIENT_SECRET'
+  );
   // const facebook = Config.Secret.create(
   //   stack,
   //   'FACEBOOK_APP_ID',
@@ -19,6 +24,8 @@ export function AuthStack({ app, stack }: StackContext) {
       bind: [
         table,
         google.GOOGLE_CLIENT_ID,
+        github.GITHUB_CLIENT_ID,
+        github.GITHUB_CLIENT_SECRET,
         // facebook.FACEBOOK_APP_ID,
         // facebook.FACEBOOK_APP_SECRET,
       ],

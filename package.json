@@ -27,6 +27,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "jfsi": "^0.11.2"
+    "jfsi": "^0.11.3"
   }
 }

@@ -5,8 +5,8 @@ importers:
   .:
     dependencies:
       jfsi:
-        specifier: ^0.11.2
-        version: 0.11.2(electrodb@2.5.1)(sst@2.8.22)
+        specifier: ^0.11.3
+        version: 0.11.3(electrodb@2.5.1)(sst@2.8.22)
     devDependencies:
       '@tsconfig/node16':
         specifier: ^1.0.3
@@ -39,8 +39,8 @@ importers:
         specifier: ^2.0.17
         version: 2.0.17(react@18.2.0)
       '@jfsi/react':
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: ^0.11.3
+        version: 0.11.3
       '@reduxjs/toolkit':
         specifier: ^1.9.5
         version: 1.9.5(react@18.2.0)
@@ -154,8 +154,8 @@ importers:
         specifier: ^2.0.17
         version: 2.0.17(react@18.2.0)
       '@jfsi/react':
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: ^0.11.3
+        version: 0.11.3
       '@types/react':
         specifier: ^18.0.21
         version: 18.0.28
@@ -3425,8 +3425,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@jfsi/react@0.11.2:
-    resolution: {integrity: sha512-Caa7hOzVceQ+IzYf24heesb+DqQUPXWUZxzJ6dcacLNmg5botdsT0q5S55TkhXRzvDowcBlQu1YPsgmKLJHCDg==}
+  /@jfsi/react@0.11.3:
+    resolution: {integrity: sha512-CJ/gSAclWI80AudfC3XIL1UAXhJ5EoYuZpPNTt8L4DZFF2QNdOGFDZ+esgFzhAy8jeyr6jOSGn0QfBkB7vGOig==}
     dependencies:
       '@headlessui/react': 1.7.14(react-dom@18.2.0)(react@18.2.0)
       '@heroicons/react': 2.0.17(react@18.2.0)
@@ -6464,8 +6464,8 @@ packages:
     dependencies:
       ws: 8.13.0
 
-  /jfsi@0.11.2(electrodb@2.5.1)(sst@2.8.22):
-    resolution: {integrity: sha512-N+keDCf+AQWgkNOTNR3G/YR6nnQZEqiMawJxak28o4mxZWRAhG/DZQ4gpKSbTEBs1T2Zndf0NjmHBgUxaUVjUg==}
+  /jfsi@0.11.3(electrodb@2.5.1)(sst@2.8.22):
+    resolution: {integrity: sha512-JncRHc2z+qNWTiHDNqjzJkfqxpt6BuW13sCqav8ULCNkr5vIztGj3w7GWce9nWPxR5DfWrlCA9Ugp3STUyNjRQ==}
     peerDependencies:
       electrodb: '*'
       sst: '*'
