@@ -6,6 +6,9 @@ import { zod } from '../zod';
 import { z } from 'zod';
 import { assertActor } from '../actors';
 
+// TODO: Investigate a better way to save the API Keys instead of saving it in
+// DDB. Maybe use SSM or something?
+
 const OrgBase = generateOrganizationEntityDetails(
   Configuration,
   {
@@ -36,47 +39,6 @@ const OrgBase = generateOrganizationEntityDetails(
 );
 
 export type Info = EntityItem<typeof OrgBase.OrganizationEntity>;
-
-// /**
-//  * Set the OpenAI API Key to use for the active organization
-//  * @param apiKey The key to set
-//  * @returns
-//  */
-// export const setOpenAIKey = zod(
-//   z
-//     .string()
-//     .startsWith('sk-', 'This does not look like an OpenAI API Key')
-//     .min(50, 'This does not look like an OpenAI API Key'),
-//   async (apiKey: string) => {
-//     const actor = assertActor('user');
-
-//     const res = await OrgBase.OrganizationEntity.update({
-//       organizationId: actor.properties.organizationId,
-//     })
-//       .set({ openAIApiKey: apiKey })
-//       .go({ response: 'updated_new' });
-
-//     return res.data.openAIApiKey;
-//   }
-// );
-
-// /**
-//  * Get the OpenAI Key for the active organization
-//  */
-// export const getOpenAIKey = zod(
-//   /** Organization Id to use */
-//   z.string().optional(),
-//   async (organizationId) => {
-//     const organizationIdToUse =
-//       organizationId ?? assertActor('user').properties.organizationId;
-
-//     const res = await OrgBase.OrganizationEntity.get({
-//       organizationId: organizationIdToUse,
-//     }).go();
-
-//     return res.data?.openAIApiKey;
-//   }
-// );
 
 function removeUndefinedKeys(
   keys: Record<string, unknown>
