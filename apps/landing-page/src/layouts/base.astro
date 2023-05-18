@@ -5,8 +5,8 @@ export interface Props {
 
 const { title } = Astro.props;
 
-const isProduction = process.env.STAGE === 'prod';
-const domainName = process.env.SITE_DOMAIN;
+const isProduction = import.meta.env.PUBLIC_STAGE === 'prod';
+const domainName = import.meta.env.PUBLIC_SITE_DOMAIN;
 ---
 
 <!DOCTYPE html>

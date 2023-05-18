@@ -4,6 +4,7 @@ import { Header } from '../components/layouts/header';
 import Base from '../layouts/base.astro';
 import { APP_ENDPOINT, COMPANY_LOGO, COMPANY_NAME } from '../constants';
 import { HeroDesktopScreenshot } from '../components/layouts/hero-desktop-screenshot';
+import DesktopScreenshot from '../assets/unbind-screenshot-desktop.png';
 
 const featuredTestimonial = {
   content:
@@ -79,10 +80,10 @@ const testimonials = [
       <HeroDesktopScreenshot
         client:only
         title='All your data. Unbounded.'
-        description="Unbind, the innovative question-answering platform that empowers you to unlock the knowledge within your documents. Whether you're a student, professional, or researcher, Unbind enables you to ask questions about your documents and receive accurate answers instantly."
+        description='Unbind, the innovative question-answering platform that empowers you to unlock the knowledge within your documents. Whether you want to build an app for researchers, game rules or students, Unbind enables you to ask questions about your documents and receive accurate answers.'
         cta={{ label: 'Free sign up', href: APP_ENDPOINT }}
         screenshot={{
-          src: 'MobileScreenshot',
+          src: DesktopScreenshot,
           alt: 'Desktop screenshot',
         }}
         client:only
@@ -145,7 +146,7 @@ const testimonials = [
         // { name: 'facebook', href: '#' },
         // { name: 'instagram', href: '#' },
         // { name: 'twitter', href: '#' },
-        // { name: 'github', href: '#' },
+        { name: 'github', href: 'https://github.com/justindra/unbind' },
         // { name: 'youtube', href: '#' },
       ]}
       client:only
