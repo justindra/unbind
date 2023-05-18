@@ -1,8 +1,8 @@
-// import { WebsocketApiHandler, useConnectionId } from 'sst/node/websocket-api';
 import { WebSocketConnections } from '@unbind/core/websocket-connections';
-import { WebsocketApiHandler, useConnectionId } from './handler';
+import { useConnectionId } from 'sst/node/websocket-api';
+import { AuthenticatedWebSocketApiHandler } from './handler';
 
-export const handler = WebsocketApiHandler(async () => {
+export const handler = AuthenticatedWebSocketApiHandler(async () => {
   const connectionId = useConnectionId();
 
   const connection = await WebSocketConnections.getConnectionById(connectionId);

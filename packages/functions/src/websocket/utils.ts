@@ -2,7 +2,7 @@ import {
   ApiGatewayManagementApiClient,
   PostToConnectionCommand,
 } from '@aws-sdk/client-apigatewaymanagementapi';
-import { WebSocketApi } from 'sst/node/api';
+import { WebSocketApi } from 'sst/node/websocket-api';
 
 export const sendMessage = async (connectionId: string, data: any) => {
   const client = new ApiGatewayManagementApiClient({
