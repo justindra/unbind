@@ -58,7 +58,7 @@ const router = createBrowserRouter([
         logoAlt={`${COMPANY_NAME} Logo`}
         authUrl={AUTH_URL}
         redirectUrl={REDIRECT_URL}
-        providers={['google']}
+        providers={['google', 'github']}
       />
     ),
   },
