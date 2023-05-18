@@ -23,7 +23,7 @@ export async function generateSummary(
   docs: Document[],
   openAIApiKey: string,
   vectors: number[][]
-) {
+): Promise<string> {
   const llm = new OpenAI({
     temperature: 0,
     openAIApiKey,
@@ -152,6 +152,7 @@ export async function generateSummary(
     //   console.log(`Final Summary:
 
     // ${final.text}`);
+    return final.text;
   } catch (error) {
     if ((error as any).isAxiosError) {
       console.log((error as any).response.data);
@@ -159,4 +160,5 @@ export async function generateSummary(
       console.log((error as Error).message);
     }
   }
+  return '';
 }

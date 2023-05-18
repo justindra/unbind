@@ -22,7 +22,16 @@ const OpenAIApiKeyModal = () => {
   }, []);
   if (isLoading || !hasFalseValue(data)) return null;
 
-  return <SetAPIKeysModal />;
+  return (
+    <SetAPIKeysModal
+      requireOpenAI={!data?.openAIApiKey}
+      requirePinecone={
+        !data?.pineconeApiKey ||
+        !data?.pineconeEnvironment ||
+        !data?.pineconeIndex
+      }
+    />
+  );
 };
 
 export const AppRoot: React.FC = () => {

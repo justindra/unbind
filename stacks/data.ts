@@ -1,5 +1,5 @@
 import { generateDefaultTableOptions } from 'jfsi/constructs';
-import { Bucket, Config, EventBus, StackContext, Table } from 'sst/constructs';
+import { Bucket, EventBus, StackContext, Table } from 'sst/constructs';
 import { DomainUtils } from './constants';
 
 export function DataStack({ app, stack }: StackContext) {
@@ -26,6 +26,7 @@ export function DataStack({ app, stack }: StackContext) {
       function: {
         handler: 'packages/functions/src/file-uploaded.handler',
         bind: [table, filesBucket, eventBus],
+        timeout: '15 minutes',
       },
       events: ['object_created'],
     },

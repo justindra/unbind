@@ -52,10 +52,13 @@ function removeUndefinedKeys(
  * Turn all the keys to just be a boolean true or false to specify whether or
  * not it has been set.
  */
-function keysToBoolean(keys: Record<string, unknown>): Record<string, boolean> {
+function keysToBoolean<
+  TInput extends Record<string, unknown>,
+  TOutput extends Record<keyof TInput, boolean>
+>(keys: TInput): TOutput {
   return Object.fromEntries(
     Object.entries(keys).map(([key, value]) => [key, Boolean(value)])
-  );
+  ) as TOutput;
 }
 
 /**
@@ -66,7 +69,8 @@ export const setApiKeys = zod(
     openAIApiKey: z
       .string()
       .startsWith('sk-', 'This does not look like an OpenAI API Key')
-      .min(50, 'This does not look like an OpenAI API Key'),
+      .min(50, 'This does not look like an OpenAI API Key')
+      .optional(),
     pineconeApiKey: z.string().optional(),
     pineconeEnvironment: z.string().optional(),
     pineconeIndex: z.string().optional(),
@@ -90,7 +94,7 @@ export const setApiKeys = zod(
           pineconeIndex,
         })
       )
-      .go({ response: 'updated_new' });
+      .go({ response: 'all_new' });
 
     return keysToBoolean(res.data);
   }

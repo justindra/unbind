@@ -108,7 +108,7 @@ export const handler: S3Handler = async (event) => {
           fileId,
           pageCount,
           size: s3Object.ContentLength || 0,
-          summary: res[1],
+          summary: res[1] || '',
         });
       } catch (error) {
         console.error(

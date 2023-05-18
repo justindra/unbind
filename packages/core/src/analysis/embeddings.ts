@@ -3,7 +3,6 @@ import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { Config } from 'sst/node/config';
 
 const pcClient = new PineconeClient();
 
