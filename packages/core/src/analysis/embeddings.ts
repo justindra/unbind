@@ -3,7 +3,6 @@ import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { Config } from 'sst/node/config';
 
 const pcClient = new PineconeClient();
 
@@ -49,16 +48,25 @@ export async function saveEmbeddings(
   embeddings: OpenAIEmbeddings,
   vectors: number[][],
   documents: Document[],
-  { organizationId }: Pick<FileDetails, 'organizationId'>
+  {
+    organizationId,
+    pineconeApiKey,
+    pineconeEnvironment,
+    pineconeIndex,
+  }: Pick<FileDetails, 'organizationId'> & {
+    pineconeApiKey: string;
+    pineconeEnvironment: string;
+    pineconeIndex: string;
+  }
 ) {
   await pcClient.init({
-    apiKey: Config.PINECONE_API_KEY,
-    environment: Config.PINECONE_ENV,
+    apiKey: pineconeApiKey,
+    environment: pineconeEnvironment,
   });
-  const pineconeIndex = pcClient.Index(Config.PINECONE_INDEX);
+  const pcIndex = pcClient.Index(pineconeIndex);
 
   const store = new PineconeStore(embeddings, {
-    pineconeIndex,
+    pineconeIndex: pcIndex,
     namespace: organizationId,
   });
 

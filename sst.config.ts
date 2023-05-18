@@ -13,6 +13,10 @@ export default {
     };
   },
   stacks(app) {
+    app.setDefaultFunctionProps({
+      runtime: 'nodejs18.x',
+    });
+
     app
       .stack(DataStack, { id: 'data' })
       .stack(AuthStack, { id: 'auth' })

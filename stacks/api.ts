@@ -4,7 +4,7 @@ import { AuthStack } from './auth';
 import { DomainUtils, HOSTED_ZONE } from './constants';
 
 export function APIStack({ app, stack }: StackContext) {
-  const { table, filesBucket, eventBus, pinecone } = use(DataStack);
+  const { table, filesBucket, eventBus } = use(DataStack);
   const { auth } = use(AuthStack);
 
   // TRPC API
@@ -66,14 +66,7 @@ export function APIStack({ app, stack }: StackContext) {
         processAwaitingChat: {
           function: {
             handler: 'packages/functions/src/chats/process-awaiting.handler',
-            bind: [
-              table,
-              eventBus,
-              pinecone.PINECONE_API_KEY,
-              pinecone.PINECONE_ENV,
-              pinecone.PINECONE_INDEX,
-              ws,
-            ],
+            bind: [table, eventBus, ws],
             timeout: '5 minutes', // Just in case OpenAI takes a while to respond
           },
         },

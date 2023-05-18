@@ -11,7 +11,7 @@ import {
   updateFileAfterProcessing,
   updateFileStatus,
 } from '@unbind/core/entities/documents';
-import { getOpenAIKey } from '@unbind/core/entities/organizations';
+import { assertApiKeys, getApiKeys } from '@unbind/core/entities/organizations';
 import { S3Handler } from 'aws-lambda';
 
 const client = new S3Client({});
@@ -74,12 +74,8 @@ export const handler: S3Handler = async (event) => {
           status: 'processing',
         });
 
-        const openAIApiKey = await getOpenAIKey(organizationId);
-        if (!openAIApiKey) {
-          throw new Error(
-            `No OpenAI API key found for organization ${organizationId}`
-          );
-        }
+        const keys = await getApiKeys(organizationId);
+        assertApiKeys(keys);
 
         const filename = s3Object.Metadata?.fileName || '';
 
@@ -89,15 +85,20 @@ export const handler: S3Handler = async (event) => {
             fileId,
             documentId,
             filename,
-            openAIApiKey,
+            openAIApiKey: keys.openAIApiKey,
             organizationId,
           });
 
         const res = await Promise.all([
           // Analyze the file and save embeddings to Pinecone
-          saveEmbeddings(embeddings, vectors, documents, { organizationId }),
-          // TODO: Analyze the file to have a summary of the file
-          generateSummary(documents, openAIApiKey, vectors),
+          saveEmbeddings(embeddings, vectors, documents, {
+            organizationId,
+            pineconeApiKey: keys.pineconeApiKey,
+            pineconeEnvironment: keys.pineconeEnvironment,
+            pineconeIndex: keys.pineconeIndex,
+          }),
+          // Analyze the file to have a summary of the file
+          generateSummary(documents, keys.openAIApiKey, vectors),
         ]);
 
         // Update the file in DDB with all the new details that we have analyzed
@@ -107,7 +108,7 @@ export const handler: S3Handler = async (event) => {
           fileId,
           pageCount,
           size: s3Object.ContentLength || 0,
-          summary: res[1],
+          summary: res[1] || '',
         });
       } catch (error) {
         console.error(
