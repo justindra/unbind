@@ -7,7 +7,6 @@ import { ChatOpenAI } from 'langchain/chat_models/openai';
 import { Document } from 'langchain/document';
 import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
 import { PineconeStore } from 'langchain/vectorstores/pinecone';
-import { Config } from 'sst/node/config';
 import { z } from 'zod';
 import { CHAT_MESSAGE_ROLE, ChatMessageRole } from '../entities/chats/base';
 import { zMessage } from '../entities/chats/functions';
@@ -65,10 +64,10 @@ const getVectorStore = zod(
       apiKey: pineconeApiKey,
       environment: pineconeEnvironment,
     });
-    const pineconeIndex = client.Index(pineconeIndex);
+    const pcIndex = client.Index(pineconeIndex);
 
     const vectorStore = await PineconeStore.fromExistingIndex(embeddings, {
-      pineconeIndex,
+      pineconeIndex: pcIndex,
       namespace: organizationId,
       filter: { documentId },
     });
@@ -94,6 +93,9 @@ export const queryDocument = zod(
     callback: zCallbackFn,
     /** The timestamp to use for the query */
     timestamp: z.string().optional(),
+    pineconeApiKey: z.string(),
+    pineconeEnvironment: z.string(),
+    pineconeIndex: z.string(),
   }),
   async ({
     organizationId,
@@ -102,6 +104,9 @@ export const queryDocument = zod(
     openAIApiKey,
     callback,
     timestamp,
+    pineconeApiKey,
+    pineconeEnvironment,
+    pineconeIndex,
   }) => {
     const { files } = await Documents.getDocumentById({
       documentId,
@@ -113,6 +118,9 @@ export const queryDocument = zod(
       openAIApiKey,
       organizationId,
       documentId,
+      pineconeApiKey,
+      pineconeEnvironment,
+      pineconeIndex,
     });
 
     const relevantDocs = await vectorStore.similaritySearch(query, 4);
@@ -183,6 +191,9 @@ export const queryDocumentChat = zod(
     callback: zCallbackFn,
     /** The timestamp to use for the query */
     timestamp: z.string().optional(),
+    pineconeApiKey: z.string(),
+    pineconeEnvironment: z.string(),
+    pineconeIndex: z.string(),
   }),
   async ({
     organizationId,
@@ -192,6 +203,9 @@ export const queryDocumentChat = zod(
     callback,
     chatHistory,
     timestamp,
+    pineconeApiKey,
+    pineconeEnvironment,
+    pineconeIndex,
   }) => {
     // No chat history, let's just use the basic document query for now
     if (!chatHistory.length)
@@ -202,6 +216,9 @@ export const queryDocumentChat = zod(
         openAIApiKey,
         callback,
         timestamp,
+        pineconeApiKey,
+        pineconeEnvironment,
+        pineconeIndex,
       });
 
     const streamResults = !!callback;
@@ -210,6 +227,9 @@ export const queryDocumentChat = zod(
       openAIApiKey,
       organizationId,
       documentId,
+      pineconeApiKey,
+      pineconeEnvironment,
+      pineconeIndex,
     });
 
     const llm = new ChatOpenAI({

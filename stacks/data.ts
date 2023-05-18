@@ -31,5 +31,5 @@ export function DataStack({ app, stack }: StackContext) {
     },
   });
 
-  return { table, filesBucket, eventBus, pinecone };
+  return { table, filesBucket, eventBus };
 }

@@ -80,6 +80,8 @@ export const connect = zod(
 /**
  * Disconnect a WebSocket connection, this will update the `disconnectedAt`
  * field in the database.
+ *
+ * TODO: just delete the record instead of updating it.
  */
 export const disconnect = zod(
   z.object({

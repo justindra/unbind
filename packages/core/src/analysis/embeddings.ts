@@ -64,10 +64,10 @@ export async function saveEmbeddings(
     apiKey: pineconeApiKey,
     environment: pineconeEnvironment,
   });
-  const pineconeIndex = pcClient.Index(pineconeIndex);
+  const pcIndex = pcClient.Index(pineconeIndex);
 
   const store = new PineconeStore(embeddings, {
-    pineconeIndex,
+    pineconeIndex: pcIndex,
     namespace: organizationId,
   });
 

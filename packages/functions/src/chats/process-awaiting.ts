@@ -4,9 +4,11 @@ import {
   getChatById,
   setMessageToBeProcessing,
 } from '@unbind/core/entities/chats/functions';
-import { Organizations } from '@unbind/core/entities/organizations';
+import {
+  Organizations,
+  assertApiKeys,
+} from '@unbind/core/entities/organizations';
 import { WebSocketConnections } from '@unbind/core/websocket-connections';
-import { ValidationException } from 'jfsi/node/errors';
 import { EventBridgeWrapper } from 'jfsi/node/event-bus';
 import { sendMessage } from '../websocket/utils';
 import { GoneException } from '@aws-sdk/client-apigatewaymanagementapi';
@@ -19,13 +21,9 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
 
   const { chatId, documentId, organizationId, userId } = evt.detail;
 
-  const openAIApiKey = await Organizations.getOpenAIKey(organizationId);
+  const keys = await Organizations.getApiKeys(organizationId);
 
-  if (!openAIApiKey) {
-    throw new ValidationException(
-      'OpenAI API Key not set for the organization, please set and try again.'
-    );
-  }
+  assertApiKeys(keys);
 
   const currentChat = await getChatById(chatId);
 
@@ -57,7 +55,10 @@ export const handler = EventBridgeWrapper<'chats.awaiting'>(async (evt) => {
     documentId,
     chatHistory,
     query,
-    openAIApiKey,
+    openAIApiKey: keys.openAIApiKey,
+    pineconeApiKey: keys.pineconeApiKey,
+    pineconeEnvironment: keys.pineconeEnvironment,
+    pineconeIndex: keys.pineconeIndex,
     callback: connections.length
       ? async (token) => {
           console.log(

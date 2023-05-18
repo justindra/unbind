@@ -102,6 +102,7 @@ export const setApiKeys = zod(
 export const getApiKeys = zod(
   /** Organization Id to use */
   z.string().optional(),
+
   async (organizationId) => {
     const organizationIdToUse =
       organizationId ?? assertActor('user').properties.organizationId;
@@ -110,19 +111,49 @@ export const getApiKeys = zod(
       organizationId: organizationIdToUse,
     }).go();
 
-    return keysToBoolean({
+    return {
       openAIApiKey: res.data?.openAIApiKey,
       pineconeApiKey: res.data?.pineconeApiKey,
       pineconeEnvironment: res.data?.pineconeEnvironment,
       pineconeIndex: res.data?.pineconeIndex,
-    });
+    };
   }
+);
+
+/**
+ * A wrapper around getting the API Keys but we hide the actual values. Used
+ * for the frontend.
+ */
+export const getHiddenApiKeys = zod(
+  z.string().optional(),
+  async (organizationId) => keysToBoolean(await getApiKeys(organizationId))
 );
 
 export const Organizations = {
   ...OrgBase,
-  // setOpenAIKey,
-  // getOpenAIKey,
   setApiKeys,
   getApiKeys,
+  getHiddenApiKeys,
 };
+
+type DeepNonNullable<T> = {
+  [P in keyof T]-?: NonNullable<T[P]>;
+};
+
+/**
+ * Assert that we have all of the required API Keys
+ */
+export function assertApiKeys<
+  TKeys extends Awaited<ReturnType<typeof getApiKeys>>
+>(keys: TKeys): asserts keys is DeepNonNullable<TKeys> {
+  if (!keys.openAIApiKey) {
+    throw new Error(`No OpenAI API key found for organization`);
+  }
+  if (
+    !keys.pineconeApiKey ||
+    !keys.pineconeEnvironment ||
+    !keys.pineconeIndex
+  ) {
+    throw new Error(`No Pinecone keys found for organization`);
+  }
+}
